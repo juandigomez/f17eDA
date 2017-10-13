@@ -1,0 +1,181 @@
+---
+title: "Project 2: Prediction of Heart Disease"
+author: "Group 8: Jackie Lee, Juan Gomez, Patrick Lyons, Ross Miglin"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 4
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+require(data.world)
+require(dplyr)
+require(MASS)
+require(ggplot2)
+require(shiny)
+library(rsconnect)
+library(class)
+knitr::opts_chunk$set(echo = TRUE)
+```
+  
+
+```{r}
+project <- "https://data.world/jlee/f-17-eda-project-2"
+data.world::set_config(cfg_env("DW_API"))
+df <- data.world::query(data.world::qry_sql("SELECT * FROM heartdisease"), dataset = project)
+regions = df %>% dplyr::distinct(region)
+
+df$num[df$num > 0] <- 1
+
+df$sex[df$sex == "male"] <- 1
+df$sex[df$sex == "female"] <- 0
+
+df$chestpain[df$chestpain == "typical angina"] <- 1
+df$chestpain[df$chestpain == "atypical angina"] <- 2
+df$chestpain[df$chestpain == "non-anginal pain"] <- 3
+df$chestpain[df$chestpain == "asymptomatic"] <- 3
+
+df$fbs[df$fbs == "true"] <- 1
+df$fbs[df$fbs == "false"] <- 0
+
+```
+
+## **Introduction** 
+For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart diseas or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.
+
+
+## Logistical Regression
+Description
+
+```{r}
+glm.fit=glm(df$num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
+glm.probs = predict(glm.fit,type="response")
+glm.pred=ifelse(glm.probs>0.5,1,0)
+```
+
+Discussion
+
+```{r}
+table(glm.pred,df$num) #allows us to compare our predictions to the actual data
+mean(glm.pred==df$num)
+```
+
+## Linear Discriminant Analysis
+Description
+
+```{r}
+Heart=lda(df$num~chol+thalach+trestbps+oldpeak,data=df,subset=age<=55)
+train = subset(df,age>55)
+lda.pred=predict(Heart,train)
+dflda = data.frame(lda.pred)
+
+```
+ 
+ Discussion
+ 
+```{r}
+renderPlot(ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), color="blue") + facet_wrap(~class))
+```
+
+Discussion
+
+```{r}
+renderPlot(ggplot(dflda) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
+```
+
+Discussion
+
+```{r}
+table(lda.pred$class,train$num)
+
+mean(lda.pred$class==train$num)
+```
+
+## Quadratic Discriminant Analysis
+Description
+```{r}
+qda.fit = qda(num~age+trestbps,data=df,family=binomial)
+qda.fit
+```
+
+Discussion
+
+```{r}
+qda.fit = qda(num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
+qda.fit
+```
+## K-Nearest Neighbors
+For the First K-Nearest Neighbors test, we used cholesterol and sex in order to predict if an individual has heart disease. This chunk shows the code and procedure that we took to analyse the data. As mentioned earlier, the 0 means that they DO NOT have heart disease and 1 means that they DO have heart diseae. Below are the results of the KNN analysis with the cholesterol and sex cirteria used for preditions. As one can, these attributes are not good predictors as the mean is around 50% which is not very benificial to us.
+
+```{r}
+
+# Establishing training data
+train = df$age > 50
+
+# Test 1: Using Cholester and sex to determine heart disease
+test1 = cbind(df$chol,df$sex)
+
+knn.pred1 = knn(test1[train,], test1[!train,], df$num[train], k=1)
+table(knn.pred1,df$num[!train])
+mean(knn.pred1==df$num[!train])
+```
+
+We then continued to sift through the data and found much better predictors with oldpeak (which is a measure of depression set upon by excersie relative to rest) and fasting blood sugar level. The results of this analysis are better than the previous one with a mean closer to around 75%
+
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.pred2 = knn(test2[train,], test2[!train,], df$num[train], k=1)
+table(knn.pred2,df$num[!train])
+mean(knn.pred2==df$num[!train])
+```
+
+In order to be thorough, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.
+
+```{r}
+
+# Establishing training data
+train = df$age > 50
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test3 = cbind(df$trestbps,df$chestpain)
+
+knn.pred3 = knn(test3[train,], test3[!train,], df$num[train], k=1)
+table(knn.pred3,df$num[!train])
+mean(knn.pred3==df$num[!train])
+```
+
+Lastly, to continue finding the best optimization of this method, we varied the K to see if the results would change. We chose to use the criteria that gave us the best reults in hope that we can find even better results. As seen by the resuts below, the varience between the means is not of fairly large significance, so the size of K did not have a major affect on the accuracy of the analysis.
+
+```{r}
+
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk3 = knn(test2[train,], test2[!train,], df$num[train], k=3)
+mean(knn.predk3==df$num[!train])
+
+knn.predk5 = knn(test2[train,], test2[!train,], df$num[train], k=5)
+mean(knn.predk5==df$num[!train])
+
+knn.predk7 = knn(test2[train,], test2[!train,], df$num[train], k=7)
+mean(knn.predk7==df$num[!train])
+
+knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
+mean(knn.predk9==df$num[!train])
+
+```
+
