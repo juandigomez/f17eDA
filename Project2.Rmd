@@ -198,5 +198,25 @@ knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
 mean(knn.predk9==df$num[!train])
 ```
 
+**Resting Blood Pressure Density**
+```{r, echo=FALSE}
+inputPanel(
+  selectInput("n_breaks", lab = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step=0.2)
+)
+
+renderPlot({
+  hist(df$trestbps, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Resting Blood Pressure", main = "")
+  
+  dens <- density(df$trestbps, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
 ## **Conclusion**
+
+
 
