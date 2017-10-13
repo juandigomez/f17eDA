@@ -60,24 +60,32 @@ df$fbs[df$fbs == "false"] <- 0
 ## **Introduction** 
 For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart disease or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.
 
+
+
 ## **Logistical Regression**
-Description
+For the logistic regression of this model, we see from the summary of the glm.fit that both the thalach and oldpeak variables are significantly correlated predictors of heart disease. As a refresher, thalach is the maximum heart rate achieved and oldpeak is ST depression induc. The coefficient on thalach, or max heart rate achieved, is negative, which means that a lower maximum heart rate achieved is more correlated to having heart disease than a higher maximum heart rate. The coefficient on oldpeak, or ST depression induc., is positive, indicating that a depression of the ST segment is correlated to heart disease. Upon researching this area further, this checks out, as ST-segment depression is well-studied in the medical community and is strongly linked to heart abnormalities.
 
 ```{r}
 glm.fit=glm(df$num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
+summary(glm.fit)
 glm.probs = predict(glm.fit,type="response")
 glm.pred=ifelse(glm.probs>0.5,1,0)
 ```
 
-Discussion
+
+**Explanation/Insight on Logistical Regression**
+The overall model, using thalach, oldpeak, and 3 other variables accurately predicted heart disease 72% of the time.
 
 ```{r}
 table(glm.pred,df$num) #allows us to compare our predictions to the actual data
 mean(glm.pred==df$num)
 ```
 
+
+
 ## **Linear Discriminant Analysis**
 In our Linear Discriminant Analysis, we're predicting if an individual has heart disease based on four factors:chol,thalach,trestbps,oldpeak (chol=cholesterol, thalach=maximum heart rate achieved, trestbps=peak exercise blood pressure, oldpeak=ST depression induced by exercise relative to rest). Our training set will be for individuals less than or equal to the age of 55 and our testing set will be for individuals over the age of 55. The values of num are 0 and 1. 0 means no heart disease and 1 represents having heart disease.
+
 
 ```{r}
 df$num[df$num > 0] <- 1
@@ -90,6 +98,7 @@ lda.pred=predict(Heart,train)
 dflda = data.frame(lda.pred)
 ```
 
+
 **Interactive Linear Discriminant Histogram**
 ```{r}
 sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
@@ -101,41 +110,55 @@ renderPlot({
   ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
 ```
 
+
 **Linear Discriminant Boxplot**
 ```{r}
 renderPlot(ggplot(dflda) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
 ```
+
 
 **Confusion Matrix**
 ```{r}
 table(lda.pred$class,train$num)
 ```
 
+
 **Model Mean Accuracy Rate**
 ```{r}
 mean(lda.pred$class==train$num)
 ```
 
+
 **Explanation/Insight on LDA**
 Looking at the confusion matrix, we can see that out of 62 no heart diseases, 40 were classified as no heart diseases. And out of 90 heart diseases, 56 were classified as heart diseases. So the linear discriminant model gives a mean of 63% of being accurate in predicting whether an individual over the age of 55 has or doesn't have heart disease. This is fairly accurate, but we want to compare the result of this model with the results of other models.
  
+ 
+ 
 ## **Quadratic Discriminant Analysis**
-Description
+For the 4 individuals with cholesterol at 282, 4 of the individuals examined had heart disease. However, our model only picked up on half of them having it.
 ```{r}
-qda.fit = qda(num~age+trestbps,data=df,family=binomial)
+qda.fit = qda(df$num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
 qda.fit
 ```
 
-Discussion
+
+**Explanation/Insight on QDA**
+We predicted that high cholesterol (>230) would be a good indicator of heart disease, and it turns out that there's a 50% accuracy rate with predicting heart disease within this range using quadratic discriminant analysis for cholesterol levels at 282. Our current QDA model predicts heart disease 50% of the time. This is an indicator that other factors combined with cholesterol levels are required to create an accurate heart disease prediction.
 
 ```{r}
-qda.fit = qda(num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
-qda.fit
+df.282 = subset(df,chol==282)
+qda.class = predict(qda.fit, df.282)
+table(qda.class$class,df.282$num)
+mean(qda.class$class==df.282$num)
 ```
+
+
 
 ## **K-Nearest Neighbors**
 For the First K-Nearest Neighbors test, we used cholesterol and sex in order to predict if an individual has heart disease. This chunk shows the code and procedure that we took to analyse the data. As mentioned earlier, the 0 means that they DO NOT have heart disease and 1 means that they DO have heart diseae. Below are the results of the KNN analysis with the cholesterol and sex cirteria used for preditions. As one can, these attributes are not good predictors as the mean is around 50% which is not very benificial to us.
 
+
+**Confusion Matrix and Mean of Cholesterol and Sex Analysis**
 ```{r}
 # Establishing training data
 train = df$age > 50
@@ -150,6 +173,8 @@ mean(knn.pred1==df$num[!train])
 
 We then continued to sift through the data and found much better predictors with oldpeak (which is a measure of depression set upon by excersie relative to rest) and fasting blood sugar level. The results of this analysis are better than the previous one with a mean closer to around 75%
 
+
+**Confusion Matrix and Mean of Depression and Fasting Blood Sugar Analysis**
 ```{r}
 # Establishing training data
 train = df$age > 50
@@ -162,41 +187,8 @@ table(knn.pred2,df$num[!train])
 mean(knn.pred2==df$num[!train])
 ```
 
-In order to be thorough, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.
+Through the plot below, we are able to analyze the variable of Resting Blood Pressure more in depth to determine if it's a viable predictor.
 
-```{r}
-# Establishing training data
-train = df$age > 50
-
-# Test 3: Using resting blood preassure and chest pains to determine heart disease
-test3 = cbind(df$trestbps,df$chestpain)
-
-knn.pred3 = knn(test3[train,], test3[!train,], df$num[train], k=1)
-table(knn.pred3,df$num[!train])
-mean(knn.pred3==df$num[!train])
-```
-
-Lastly, to continue finding the best optimization of this method, we varied the K to see if the results would change. We chose to use the criteria that gave us the best reults in hope that we can find even better results. As seen by the resuts below, the varience between the means is not of fairly large significance, so the size of K did not have a major affect on the accuracy of the analysis.
-
-```{r}
-# Establishing training data
-train = df$age > 50
-
-# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
-test2 = cbind(df$oldpeak,df$fbs)
-
-knn.predk3 = knn(test2[train,], test2[!train,], df$num[train], k=3)
-mean(knn.predk3==df$num[!train])
-
-knn.predk5 = knn(test2[train,], test2[!train,], df$num[train], k=5)
-mean(knn.predk5==df$num[!train])
-
-knn.predk7 = knn(test2[train,], test2[!train,], df$num[train], k=7)
-mean(knn.predk7==df$num[!train])
-
-knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
-mean(knn.predk9==df$num[!train])
-```
 
 **Resting Blood Pressure Density**
 ```{r, echo=FALSE}
@@ -216,7 +208,85 @@ renderPlot({
 })
 ```
 
-## **Conclusion**
+Because of this, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.
 
+
+**Confusion Matrix and Mean of Resting Blood Pressure and Chest Pain Analysis**
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test3 = cbind(df$trestbps,df$chestpain)
+
+knn.pred3 = knn(test3[train,], test3[!train,], df$num[train], k=1)
+table(knn.pred3,df$num[!train])
+mean(knn.pred3==df$num[!train])
+```
+
+
+Lastly, to continue finding the best optimization of this method, we varied the K to see if the results would change. We chose to use the criteria that gave us the best reults in hope that we can find even better results. As seen by the resuts below, the varience between the means is not of fairly large significance, so the size of K did not have a major affect on the accuracy of the analysis.
+
+
+
+**Mean for k=3**
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk3 = knn(test2[train,], test2[!train,], df$num[train], k=3)
+mean(knn.predk3==df$num[!train])
+```
+
+
+
+**Mean for k=5**
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk5 = knn(test2[train,], test2[!train,], df$num[train], k=5)
+mean(knn.predk5==df$num[!train])
+```
+
+
+
+**Mean for k=7**
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk7 = knn(test2[train,], test2[!train,], df$num[train], k=7)
+mean(knn.predk7==df$num[!train])
+```
+
+
+
+**Mean for k=9**
+```{r}
+# Establishing training data
+train = df$age > 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
+mean(knn.predk9==df$num[!train])
+```
+
+**Explanation/Insight on KNN**
+K-Nearest Neighbors was one of the methods with more flexibility that really allowed us to explore the data more in depth. Through various iterations with different variables, we were able to determine the best predictor combination of Depression and Fasting Blood Sugar. Once those were, we were able to examine these predictors with different K values to see if it change the accuracy. For the most part, the accuracy for this model still hovered between 75% and 77%.
+
+## **Conclusion**
+In conclusion, we explored four different model: logistic regression, linear discriminant analysis, quadratic discriminant analysis and K-nearest neighbors. We tested these model using data with relevent factors into determing whether an individual has heart diseas or not. Our findings show that the least viable model was QDA followed by LDA, with those models having an accuracy of 50% and 63% respectively. Linear regression and KNN were the most succesful, providing a mean of 72% and 75% respectively. The least succesful models could have been improved by selecteing different variables to use in hopes that we could find correlations that would lead to more accurate predictions. With that said, the two most succesful models can be modified as well in a way that we can better improve the accuracy of the model.
 
 

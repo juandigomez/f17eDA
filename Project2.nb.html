@@ -274,13 +274,24 @@ div.tocify {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-text-begin -->
+<div id="section-r-session-info" class="section level2">
+<h2><strong>R Session Info</strong></h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvamVjdCA8LSBcImh0dHBzOi8vZGF0YS53b3JsZC9qbGVlL2YtMTctZWRhLXByb2plY3QtMlwiXG5kYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoXCJEV19BUElcIikpXG5kZiA8LSBkYXRhLndvcmxkOjpxdWVyeShkYXRhLndvcmxkOjpxcnlfc3FsKFwiU0VMRUNUICogRlJPTSBoZWFydGRpc2Vhc2VcIiksIGRhdGFzZXQgPSBwcm9qZWN0KVxucmVnaW9ucyA9IGRmICU+JSBkcGx5cjo6ZGlzdGluY3QocmVnaW9uKVxuXG5kZiRudW1bZGYkbnVtID4gMF0gPC0gMVxuXG5kZiRzZXhbZGYkc2V4ID09IFwibWFsZVwiXSA8LSAxXG5kZiRzZXhbZGYkc2V4ID09IFwiZmVtYWxlXCJdIDwtIDBcblxuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcInR5cGljYWwgYW5naW5hXCJdIDwtIDFcbmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gXCJhdHlwaWNhbCBhbmdpbmFcIl0gPC0gMlxuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcIm5vbi1hbmdpbmFsIHBhaW5cIl0gPC0gM1xuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcImFzeW1wdG9tYXRpY1wiXSA8LSAzXG5cbmRmJGZic1tkZiRmYnMgPT0gXCJ0cnVlXCJdIDwtIDFcbmRmJGZic1tkZiRmYnMgPT0gXCJmYWxzZVwiXSA8LSAwXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2Vzc2lvbkluZm8oKVxuYGBgIn0= -->
+<pre class="r"><code>sessionInfo()</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="section-connecting-to-data.world" class="section level2">
+<h2><strong>Connecting to data.world</strong></h2>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucHJvamVjdCA8LSBcImh0dHBzOi8vZGF0YS53b3JsZC9qbGVlL2YtMTctZWRhLXByb2plY3QtMlwiXG5kYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoXCJEV19BUElcIikpXG5kZiA8LSBkYXRhLndvcmxkOjpxdWVyeShkYXRhLndvcmxkOjpxcnlfc3FsKFwiU0VMRUNUICogRlJPTSBoZWFydGRpc2Vhc2VcIiksIGRhdGFzZXQgPSBwcm9qZWN0KVxuXG5kZiRudW1bZGYkbnVtID4gMF0gPC0gMVxuXG5kZiRzZXhbZGYkc2V4ID09IFwibWFsZVwiXSA8LSAxXG5kZiRzZXhbZGYkc2V4ID09IFwiZmVtYWxlXCJdIDwtIDBcblxuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcInR5cGljYWwgYW5naW5hXCJdIDwtIDFcbmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gXCJhdHlwaWNhbCBhbmdpbmFcIl0gPC0gMlxuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcIm5vbi1hbmdpbmFsIHBhaW5cIl0gPC0gM1xuZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSBcImFzeW1wdG9tYXRpY1wiXSA8LSAzXG5cbmRmJGZic1tkZiRmYnMgPT0gXCJ0cnVlXCJdIDwtIDFcbmRmJGZic1tkZiRmYnMgPT0gXCJmYWxzZVwiXSA8LSAwXG5gYGAifQ== -->
 <pre class="r"><code>project &lt;- &quot;https://data.world/jlee/f-17-eda-project-2&quot;
 data.world::set_config(cfg_env(&quot;DW_API&quot;))
 df &lt;- data.world::query(data.world::qry_sql(&quot;SELECT * FROM heartdisease&quot;), dataset = project)
-regions = df %&gt;% dplyr::distinct(region)
 
 df$num[df$num &gt; 0] &lt;- 1
 
@@ -293,28 +304,29 @@ df$chestpain[df$chestpain == &quot;non-anginal pain&quot;] &lt;- 3
 df$chestpain[df$chestpain == &quot;asymptomatic&quot;] &lt;- 3
 
 df$fbs[df$fbs == &quot;true&quot;] &lt;- 1
-df$fbs[df$fbs == &quot;false&quot;] &lt;- 0
-</code></pre>
+df$fbs[df$fbs == &quot;false&quot;] &lt;- 0</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
 <div id="section-introduction" class="section level2">
 <h2><strong>Introduction</strong></h2>
-<p>For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart diseas or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.</p>
+<p>For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart disease or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.</p>
 </div>
 <div id="section-logistical-regression" class="section level2">
-<h2>Logistical Regression</h2>
-<p>Description</p>
+<h2><strong>Logistical Regression</strong></h2>
+<p>For the logistic regression of this model, we see from the summary of the glm.fit that both the thalach and oldpeak variables are significantly correlated predictors of heart disease. As a refresher, thalach is the maximum heart rate achieved and oldpeak is ST depression induc. The coefficient on thalach, or max heart rate achieved, is negative, which means that a lower maximum heart rate achieved is more correlated to having heart disease than a higher maximum heart rate. The coefficient on oldpeak, or ST depression induc., is positive, indicating that a depression of the ST segment is correlated to heart disease. Upon researching this area further, this checks out, as ST-segment depression is well-studied in the medical community and is strongly linked to heart abnormalities.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtLmZpdD1nbG0oZGYkbnVtfmFnZSt0cmVzdGJwcytjaG9sK3RoYWxhY2grb2xkcGVhayxkYXRhPWRmLGZhbWlseT1iaW5vbWlhbClcbmdsbS5wcm9icyA9IHByZWRpY3QoZ2xtLmZpdCx0eXBlPVwicmVzcG9uc2VcIilcbmdsbS5wcmVkPWlmZWxzZShnbG0ucHJvYnM+MC41LDEsMClcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZ2xtLmZpdD1nbG0oZGYkbnVtfmFnZSt0cmVzdGJwcytjaG9sK3RoYWxhY2grb2xkcGVhayxkYXRhPWRmLGZhbWlseT1iaW5vbWlhbClcbnN1bW1hcnkoZ2xtLmZpdClcbmdsbS5wcm9icyA9IHByZWRpY3QoZ2xtLmZpdCx0eXBlPVwicmVzcG9uc2VcIilcbmdsbS5wcmVkPWlmZWxzZShnbG0ucHJvYnM+MC41LDEsMClcbmBgYCJ9 -->
 <pre class="r"><code>glm.fit=glm(df$num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
+summary(glm.fit)
 glm.probs = predict(glm.fit,type=&quot;response&quot;)
 glm.pred=ifelse(glm.probs&gt;0.5,1,0)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Discussion</p>
+<p><strong>Explanation/Insight on Logistical Regression</strong> The overall model, using thalach, oldpeak, and 3 other variables accurately predicted heart disease 72% of the time.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUoZ2xtLnByZWQsZGYkbnVtKSAjYWxsb3dzIHVzIHRvIGNvbXBhcmUgb3VyIHByZWRpY3Rpb25zIHRvIHRoZSBhY3R1YWwgZGF0YVxubWVhbihnbG0ucHJlZD09ZGYkbnVtKVxuYGBgIn0= -->
@@ -325,27 +337,37 @@ mean(glm.pred==df$num)</code></pre>
 <!-- rnb-text-begin -->
 </div>
 <div id="section-linear-discriminant-analysis" class="section level2">
-<h2>Linear Discriminant Analysis</h2>
-<p>Description</p>
+<h2><strong>Linear Discriminant Analysis</strong></h2>
+<p>In our Linear Discriminant Analysis, we’re predicting if an individual has heart disease based on four factors:chol,thalach,trestbps,oldpeak (chol=cholesterol, thalach=maximum heart rate achieved, trestbps=peak exercise blood pressure, oldpeak=ST depression induced by exercise relative to rest). Our training set will be for individuals less than or equal to the age of 55 and our testing set will be for individuals over the age of 55. The values of num are 0 and 1. 0 means no heart disease and 1 represents having heart disease.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuSGVhcnQ9bGRhKGRmJG51bX5jaG9sK3RoYWxhY2grdHJlc3RicHMrb2xkcGVhayxkYXRhPWRmLHN1YnNldD1hZ2U8PTU1KVxudHJhaW4gPSBzdWJzZXQoZGYsYWdlPjU1KVxubGRhLnByZWQ9cHJlZGljdChIZWFydCx0cmFpbilcbmRmbGRhID0gZGF0YS5mcmFtZShsZGEucHJlZClcbmBgYCJ9 -->
-<pre class="r"><code>Heart=lda(df$num~chol+thalach+trestbps+oldpeak,data=df,subset=age&lt;=55)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYkbnVtW2RmJG51bSA+IDBdIDwtIDFcbkhlYXJ0PWxkYShkZiRudW1+Y2hvbCt0aGFsYWNoK3RyZXN0YnBzK29sZHBlYWssZGF0YT1kZixzdWJzZXQ9YWdlPD01NSlcbkhlYXJ0XG5yZW5kZXJQbG90KHtwbG90KEhlYXJ0KX0pXG5cbnRyYWluID0gc3Vic2V0KGRmLGFnZT41NSlcbmxkYS5wcmVkPXByZWRpY3QoSGVhcnQsdHJhaW4pXG5kZmxkYSA9IGRhdGEuZnJhbWUobGRhLnByZWQpXG5gYGAifQ== -->
+<pre class="r"><code>df$num[df$num &gt; 0] &lt;- 1
+Heart=lda(df$num~chol+thalach+trestbps+oldpeak,data=df,subset=age&lt;=55)
+Heart
+renderPlot({plot(Heart)})
+
 train = subset(df,age&gt;55)
 lda.pred=predict(Heart,train)
 dflda = data.frame(lda.pred)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Discussion</p>
+<p><strong>Interactive Linear Discriminant Histogram</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdChnZ3Bsb3QoZGZsZGEpICsgZ2VvbV9oaXN0b2dyYW0obWFwcGluZyA9IGFlcyh4PUxEMSksIGNvbG9yPVwiYmx1ZVwiKSArIGZhY2V0X3dyYXAofmNsYXNzKSlcbmBgYCJ9 -->
-<pre class="r"><code>renderPlot(ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), color=&quot;blue&quot;) + facet_wrap(~class))</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc2xpZGVySW5wdXQoXCJiaW5zXCIsIFwiTnVtYmVyIG9mIGJpbnM6XCIsIG1pbiA9IDEwLCBtYXggPSA1MCwgdmFsdWUgPSAzMClcblxuXG5yZW5kZXJQbG90KHtcbiAgeCA8LSBkZmxkYSRMRDFcbiAgYmlucyA8LSBzZXEobWluKHgpLCBtYXgoeCksIGxlbmd0aC5vdXQgPSBpbnB1dCRiaW5zICsgMSlcbiAgZ2dwbG90KGRmbGRhKSArIGdlb21faGlzdG9ncmFtKG1hcHBpbmcgPSBhZXMoeD1MRDEpLCBicmVha3MgPSBiaW5zLCBjb2xvcj1cImJsdWVcIikgKyBmYWNldF93cmFwKH5jbGFzcyl9KVxuYGBgIn0= -->
+<pre class="r"><code>sliderInput(&quot;bins&quot;, &quot;Number of bins:&quot;, min = 10, max = 50, value = 30)
+
+
+renderPlot({
+  x &lt;- dflda$LD1
+  bins &lt;- seq(min(x), max(x), length.out = input$bins + 1)
+  ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color=&quot;blue&quot;) + facet_wrap(~class)})</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Discussion</p>
+<p><strong>Linear Discriminant Boxplot</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVuZGVyUGxvdChnZ3Bsb3QoZGZsZGEpICsgZ2VvbV9ib3hwbG90KG1hcHBpbmcgPSBhZXMoeD1jbGFzcywgeT1MRDEpLCBjb2xvciA9IFwiYmx1ZVwiKSlcbmBgYCJ9 -->
@@ -353,58 +375,55 @@ dflda = data.frame(lda.pred)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>Discussion</p>
+<p><strong>Confusion Matrix</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUobGRhLnByZWQkY2xhc3MsdHJhaW4kbnVtKVxuXG5tZWFuKGxkYS5wcmVkJGNsYXNzPT10cmFpbiRudW0pXG5gYGAifQ== -->
-<pre class="r"><code>table(lda.pred$class,train$num)
-
-mean(lda.pred$class==train$num)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudGFibGUobGRhLnByZWQkY2xhc3MsdHJhaW4kbnVtKVxuYGBgIn0= -->
+<pre class="r"><code>table(lda.pred$class,train$num)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p><strong>Model Mean Accuracy Rate</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubWVhbihsZGEucHJlZCRjbGFzcz09dHJhaW4kbnVtKVxuYGBgIn0= -->
+<pre class="r"><code>mean(lda.pred$class==train$num)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Explanation/Insight on LDA</strong> Looking at the confusion matrix, we can see that out of 62 no heart diseases, 40 were classified as no heart diseases. And out of 90 heart diseases, 56 were classified as heart diseases. So the linear discriminant model gives a mean of 63% of being accurate in predicting whether an individual over the age of 55 has or doesn’t have heart disease. This is fairly accurate, but we want to compare the result of this model with the results of other models.</p>
 </div>
 <div id="section-quadratic-discriminant-analysis" class="section level2">
-<h2>Quadratic Discriminant Analysis</h2>
-<p>Description</p>
+<h2><strong>Quadratic Discriminant Analysis</strong></h2>
+<p>For the 4 individuals with cholesterol at 282, 4 of the individuals examined had heart disease. However, our model only picked up on half of them having it.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucWRhLmZpdCA9IHFkYShudW1+YWdlK3RyZXN0YnBzLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKVxucWRhLmZpdFxuYGBgIn0= -->
-<pre class="r"><code>qda.fit = qda(num~age+trestbps,data=df,family=binomial)
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucWRhLmZpdCA9IHFkYShkZiRudW1+YWdlK3RyZXN0YnBzK2Nob2wrdGhhbGFjaCtvbGRwZWFrLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKVxucWRhLmZpdFxuYGBgIn0= -->
+<pre class="r"><code>qda.fit = qda(df$num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
 qda.fit</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiQ2FsbDpcbnFkYShudW0gfiBhZ2UgKyB0cmVzdGJwcywgZGF0YSA9IGRmLCBmYW1pbHkgPSBiaW5vbWlhbClcblxuUHJpb3IgcHJvYmFiaWxpdGllcyBvZiBncm91cHM6XG4gICAgICAgIDAgICAgICAgICAxIFxuMC41NDEyNTQxIDAuNDU4NzQ1OSBcblxuR3JvdXAgbWVhbnM6XG4gICAgICAgYWdlIHRyZXN0YnBzXG4wIDUyLjU4NTM3IDEyOS4yNTAwXG4xIDU2LjYyNTkwIDEzNC41NjgzXG4ifQ== -->
-<pre><code>Call:
-qda(num ~ age + trestbps, data = df, family = binomial)
-
-Prior probabilities of groups:
-        0         1 
-0.5412541 0.4587459 
-
-Group means:
-       age trestbps
-0 52.58537 129.2500
-1 56.62590 134.5683</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p><strong>Explanation/Insight on QDA</strong> We predicted that high cholesterol (&gt;230) would be a good indicator of heart disease, and it turns out that there’s a 50% accuracy rate with predicting heart disease within this range using quadratic discriminant analysis for cholesterol levels at 282. Our current QDA model predicts heart disease 50% of the time. This is an indicator that other factors combined with cholesterol levels are required to create an accurate heart disease prediction.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucWRhLmZpdCA9IHFkYShudW1+YWdlK3RyZXN0YnBzK2Nob2wrdGhhbGFjaCtvbGRwZWFrLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKVxucWRhLmZpdFxuYGBgIn0= -->
-<pre class="r"><code>qda.fit = qda(num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
-qda.fit</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYuMjgyID0gc3Vic2V0KGRmLGNob2w9PTI4MilcbnFkYS5jbGFzcyA9IHByZWRpY3QocWRhLmZpdCwgZGYuMjgyKVxudGFibGUocWRhLmNsYXNzJGNsYXNzLGRmLjI4MiRudW0pXG5tZWFuKHFkYS5jbGFzcyRjbGFzcz09ZGYuMjgyJG51bSlcbmBgYCJ9 -->
+<pre class="r"><code>df.282 = subset(df,chol==282)
+qda.class = predict(qda.fit, df.282)
+table(qda.class$class,df.282$num)
+mean(qda.class$class==df.282$num)</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 </div>
 <div id="section-k-nearest-neighbors" class="section level2">
-<h2>K-Nearest Neighbors</h2>
+<h2><strong>K-Nearest Neighbors</strong></h2>
 <p>For the First K-Nearest Neighbors test, we used cholesterol and sex in order to predict if an individual has heart disease. This chunk shows the code and procedure that we took to analyse the data. As mentioned earlier, the 0 means that they DO NOT have heart disease and 1 means that they DO have heart diseae. Below are the results of the KNN analysis with the cholesterol and sex cirteria used for preditions. As one can, these attributes are not good predictors as the mean is around 50% which is not very benificial to us.</p>
+<p><strong>Confusion Matrix and Mean of Cholesterol and Sex Analysis</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhXG50cmFpbiA9IGRmJGFnZSA+IDUwXG5cbiMgVGVzdCAxOiBVc2luZyBDaG9sZXN0ZXIgYW5kIHNleCB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZVxudGVzdDEgPSBjYmluZChkZiRjaG9sLGRmJHNleClcblxua25uLnByZWQxID0ga25uKHRlc3QxW3RyYWluLF0sIHRlc3QxWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpXG50YWJsZShrbm4ucHJlZDEsZGYkbnVtWyF0cmFpbl0pXG5tZWFuKGtubi5wcmVkMT09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
-<pre class="r"><code>
-# Establishing training data
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMTogVXNpbmcgQ2hvbGVzdGVyIGFuZCBzZXggdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QxID0gY2JpbmQoZGYkY2hvbCxkZiRzZXgpXG5cbmtubi5wcmVkMSA9IGtubih0ZXN0MVt0cmFpbixdLCB0ZXN0MVshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz0xKVxudGFibGUoa25uLnByZWQxLGRmJG51bVshdHJhaW5dKVxubWVhbihrbm4ucHJlZDE9PWRmJG51bVshdHJhaW5dKVxuYGBgIn0= -->
+<pre class="r"><code># Establishing training data
 train = df$age &gt; 50
 
 # Test 1: Using Cholester and sex to determine heart disease
@@ -417,6 +436,7 @@ mean(knn.pred1==df$num[!train])</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>We then continued to sift through the data and found much better predictors with oldpeak (which is a measure of depression set upon by excersie relative to rest) and fasting blood sugar level. The results of this analysis are better than the previous one with a mean closer to around 75%</p>
+<p><strong>Confusion Matrix and Mean of Depression and Fasting Blood Sugar Analysis</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
 <!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMjogVXNpbmcgZGVwcmVzc2lvbiAob2xkcGVhaykgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QyID0gY2JpbmQoZGYkb2xkcGVhayxkZiRmYnMpXG5cbmtubi5wcmVkMiA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz0xKVxudGFibGUoa25uLnByZWQyLGRmJG51bVshdHJhaW5dKVxubWVhbihrbm4ucHJlZDI9PWRmJG51bVshdHJhaW5dKVxuYGBgIn0= -->
@@ -432,12 +452,18 @@ mean(knn.pred2==df$num[!train])</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
-<p>In order to be thorough, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.</p>
+<p>Through the plot below, we are able to analyze the variable of Resting Blood Pressure more in depth to determine if it’s a viable predictor.</p>
+<p><strong>Resting Blood Pressure Density</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhXG50cmFpbiA9IGRmJGFnZSA+IDUwXG5cbiMgVGVzdCAzOiBVc2luZyByZXN0aW5nIGJsb29kIHByZWFzc3VyZSBhbmQgY2hlc3QgcGFpbnMgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QzID0gY2JpbmQoZGYkdHJlc3RicHMsZGYkY2hlc3RwYWluKVxuXG5rbm4ucHJlZDMgPSBrbm4odGVzdDNbdHJhaW4sXSwgdGVzdDNbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9MSlcbnRhYmxlKGtubi5wcmVkMyxkZiRudW1bIXRyYWluXSlcbm1lYW4oa25uLnByZWQzPT1kZiRudW1bIXRyYWluXSlcbmBgYCJ9 -->
-<pre class="r"><code>
-# Establishing training data
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Because of this, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.</p>
+<p><strong>Confusion Matrix and Mean of Resting Blood Pressure and Chest Pain Analysis</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlXG50ZXN0MyA9IGNiaW5kKGRmJHRyZXN0YnBzLGRmJGNoZXN0cGFpbilcblxua25uLnByZWQzID0ga25uKHRlc3QzW3RyYWluLF0sIHRlc3QzWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpXG50YWJsZShrbm4ucHJlZDMsZGYkbnVtWyF0cmFpbl0pXG5tZWFuKGtubi5wcmVkMz09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
 train = df$age &gt; 50
 
 # Test 3: Using resting blood preassure and chest pains to determine heart disease
@@ -450,35 +476,75 @@ mean(knn.pred3==df$num[!train])</code></pre>
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Lastly, to continue finding the best optimization of this method, we varied the K to see if the results would change. We chose to use the criteria that gave us the best reults in hope that we can find even better results. As seen by the resuts below, the varience between the means is not of fairly large significance, so the size of K did not have a major affect on the accuracy of the analysis.</p>
+<p><strong>Mean for k=3</strong></p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuXG4jIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhXG50cmFpbiA9IGRmJGFnZSA+IDUwXG5cbiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZVxudGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicylcblxua25uLnByZWRrMyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz0zKVxubWVhbihrbm4ucHJlZGszPT1kZiRudW1bIXRyYWluXSlcblxua25uLnByZWRrNSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz01KVxubWVhbihrbm4ucHJlZGs1PT1kZiRudW1bIXRyYWluXSlcblxua25uLnByZWRrNyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz03KVxubWVhbihrbm4ucHJlZGs3PT1kZiRudW1bIXRyYWluXSlcblxua25uLnByZWRrOSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz05KVxubWVhbihrbm4ucHJlZGs5PT1kZiRudW1bIXRyYWluXSlcblxuYGBgIn0= -->
-<pre class="r"><code>
-# Establishing training data
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMjogVXNpbmcgZGVwcmVzc2lvbiAob2xkcGVhaykgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QyID0gY2JpbmQoZGYkb2xkcGVhayxkZiRmYnMpXG5cbmtubi5wcmVkazMgPSBrbm4odGVzdDJbdHJhaW4sXSwgdGVzdDJbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9Mylcbm1lYW4oa25uLnByZWRrMz09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
 train = df$age &gt; 50
 
 # Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
 test2 = cbind(df$oldpeak,df$fbs)
 
 knn.predk3 = knn(test2[train,], test2[!train,], df$num[train], k=3)
-mean(knn.predk3==df$num[!train])
-
-knn.predk5 = knn(test2[train,], test2[!train,], df$num[train], k=5)
-mean(knn.predk5==df$num[!train])
-
-knn.predk7 = knn(test2[train,], test2[!train,], df$num[train], k=7)
-mean(knn.predk7==df$num[!train])
-
-knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
-mean(knn.predk9==df$num[!train])
-</code></pre>
+mean(knn.predk3==df$num[!train])</code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+<p><strong>Mean for k=5</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMjogVXNpbmcgZGVwcmVzc2lvbiAob2xkcGVhaykgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QyID0gY2JpbmQoZGYkb2xkcGVhayxkZiRmYnMpXG5cbmtubi5wcmVkazUgPSBrbm4odGVzdDJbdHJhaW4sXSwgdGVzdDJbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9NSlcbm1lYW4oa25uLnByZWRrNT09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
+train = df$age &gt; 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk5 = knn(test2[train,], test2[!train,], df$num[train], k=5)
+mean(knn.predk5==df$num[!train])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Mean for k=7</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMjogVXNpbmcgZGVwcmVzc2lvbiAob2xkcGVhaykgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QyID0gY2JpbmQoZGYkb2xkcGVhayxkZiRmYnMpXG5cbmtubi5wcmVkazcgPSBrbm4odGVzdDJbdHJhaW4sXSwgdGVzdDJbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9Nylcbm1lYW4oa25uLnByZWRrNz09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
+train = df$age &gt; 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk7 = knn(test2[train,], test2[!train,], df$num[train], k=7)
+mean(knn.predk7==df$num[!train])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Mean for k=9</strong></p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBkZiRhZ2UgPiA1MFxuXG4jIFRlc3QgMjogVXNpbmcgZGVwcmVzc2lvbiAob2xkcGVhaykgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2VcbnRlc3QyID0gY2JpbmQoZGYkb2xkcGVhayxkZiRmYnMpXG5cbmtubi5wcmVkazkgPSBrbm4odGVzdDJbdHJhaW4sXSwgdGVzdDJbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9OSlcbm1lYW4oa25uLnByZWRrOT09ZGYkbnVtWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
+train = df$age &gt; 50
+
+# Test 2: Using depression (oldpeak) and fasting blood sugar to determine heart disease
+test2 = cbind(df$oldpeak,df$fbs)
+
+knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
+mean(knn.predk9==df$num[!train])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p><strong>Explanation/Insight on KNN</strong> K-Nearest Neighbors was one of the methods with more flexibility that really allowed us to explore the data more in depth. Through various iterations with different variables, we were able to determine the best predictor combination of Depression and Fasting Blood Sugar. Once those were, we were able to examine these predictors with different K values to see if it change the accuracy. For the most part, the accuracy for this model still hovered between 75% and 77%.</p>
+</div>
+<div id="section-conclusion" class="section level2">
+<h2><strong>Conclusion</strong></h2>
+<p>In conclusion, we explored four different model: logistic regression, linear discriminant analysis, quadratic discriminant analysis and K-nearest neighbors. We tested these model using data with relevent factors into determing whether an individual has heart diseas or not. Our findings show that the least viable model was QDA followed by LDA, with those models having an accuracy of 50% and 63% respectively. Linear regression and KNN were the most succesful, providing a mean of 72% and 75% respectively. The least succesful models could have been improved by selecteing different variables to use in hopes that we could find correlations that would lead to more accurate predictions. With that said, the two most succesful models can be modified as well in a way that we can better improve the accuracy of the model.</p>
 <!-- rnb-text-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByb2plY3QgMjogUHJlZGljdGlvbiBvZiBIZWFydCBEaXNlYXNlIg0KYXV0aG9yOiAiR3JvdXAgODogSmFja2llIExlZSwgSnVhbiBHb21leiwgUGF0cmljayBMeW9ucywgUm9zcyBNaWdsaW4iDQpyZXNvdXJjZV9maWxlczoNCi0gLlJlbnZpcm9uDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogICAgY29kZV9mb2xkaW5nOiBoaWRlDQogICAgdG9jOiB5ZXMNCiAgICB0b2NfZGVwdGg6IDQNCiAgICB0b2NfZmxvYXQ6IHllcw0KcnVudGltZTogc2hpbnkNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCmxpYnJhcnkodGlkeXZlcnNlKQ0KcmVxdWlyZShkYXRhLndvcmxkKQ0KcmVxdWlyZShkcGx5cikNCnJlcXVpcmUoTUFTUykNCnJlcXVpcmUoZ2dwbG90MikNCnJlcXVpcmUoc2hpbnkpDQpsaWJyYXJ5KHJzY29ubmVjdCkNCmxpYnJhcnkoY2xhc3MpDQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpDQpgYGANCiAgDQoNCmBgYHtyfQ0KcHJvamVjdCA8LSAiaHR0cHM6Ly9kYXRhLndvcmxkL2psZWUvZi0xNy1lZGEtcHJvamVjdC0yIg0KZGF0YS53b3JsZDo6c2V0X2NvbmZpZyhjZmdfZW52KCJEV19BUEkiKSkNCmRmIDwtIGRhdGEud29ybGQ6OnF1ZXJ5KGRhdGEud29ybGQ6OnFyeV9zcWwoIlNFTEVDVCAqIEZST00gaGVhcnRkaXNlYXNlIiksIGRhdGFzZXQgPSBwcm9qZWN0KQ0KcmVnaW9ucyA9IGRmICU+JSBkcGx5cjo6ZGlzdGluY3QocmVnaW9uKQ0KDQpkZiRudW1bZGYkbnVtID4gMF0gPC0gMQ0KDQpkZiRzZXhbZGYkc2V4ID09ICJtYWxlIl0gPC0gMQ0KZGYkc2V4W2RmJHNleCA9PSAiZmVtYWxlIl0gPC0gMA0KDQpkZiRjaGVzdHBhaW5bZGYkY2hlc3RwYWluID09ICJ0eXBpY2FsIGFuZ2luYSJdIDwtIDENCmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gImF0eXBpY2FsIGFuZ2luYSJdIDwtIDINCmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gIm5vbi1hbmdpbmFsIHBhaW4iXSA8LSAzDQpkZiRjaGVzdHBhaW5bZGYkY2hlc3RwYWluID09ICJhc3ltcHRvbWF0aWMiXSA8LSAzDQoNCmRmJGZic1tkZiRmYnMgPT0gInRydWUiXSA8LSAxDQpkZiRmYnNbZGYkZmJzID09ICJmYWxzZSJdIDwtIDANCg0KYGBgDQoNCiMjICoqSW50cm9kdWN0aW9uKiogDQpGb3IgdGhpcyBwcm9qZWN0LCB3ZSBkZWNpZGVkIHRvIHVzZSBkYXRhIGFib3V0IGhlYXJ0IGRpc2Vhc2UuIFRoaXMgZGF0YSBzZXQgaW5jbHVkZXMgZmFjdG9ycyB0aGF0IGNvdWxkIHBvdGVudGlhbGx5IGluZGljYXRlIHN1Y2ggYXMgZmFzdGluZyBibG9vZCBzdWdhciBsZXZlbHMsIHJlc3RpbmcgaGVhcnQgcmF0ZSwgYW5kIGNob2xlc3Rlcm9sIGFtb25nIG90aGVycy4gVGhlc2UgYXR0cmlidXRlcyB3aGVyZSB0aGVuIHVzZWQgdG8gZGV0ZXJtaW5lZCB3aGV0aGVyIGFuZCBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXMgb3Igbm90IGFuZCBpdCByYW5rcyB0aGUgc2V2ZXJpdHkgb2YgdGhlaXIgY29uZGl0aW9uLiBvciB0aGUgc2FrZSBvZiBwcm9qZWN0IGNhbGN1bGF0aW9ucywgd2UgZGlkIG5vdCBpbmNsdWRlIHRoZSByYW5raW5nIHN5c3RlbSBhbmQgY2hhbmdlZCB0aGUgZGF0YSBzZXQgc28gaXQgaXMgcmVmbGVjdGl2ZSBvZiB3aGV0aGVyIHRoZXkgaGF2ZSBoZWFydCBkaXNlYXNlIG9yIG5vdC4gSW4gb3JkZXIgdG8gcHJlZGljdCB0aGVzZSwgd2UgYXJlIGNvbXBhcmluZyBmb3VyIGRpZmZlcmVudCBtb2RlbHM6IExvZ2lzdGljYWwgUmVncmVzc2lvbiwgTGluZWFyIERpc2NyaW1pbmFudCBBbmFseXNpcywgUXVhZHJhdGljIERpc2NyaW1pbmFudCBBbmFseXNpcywgYW5kIEstTmVhcmVzdCBOZWlnaGJvcnMuDQoNCg0KIyMgTG9naXN0aWNhbCBSZWdyZXNzaW9uDQpEZXNjcmlwdGlvbg0KDQpgYGB7cn0NCmdsbS5maXQ9Z2xtKGRmJG51bX5hZ2UrdHJlc3RicHMrY2hvbCt0aGFsYWNoK29sZHBlYWssZGF0YT1kZixmYW1pbHk9Ymlub21pYWwpDQpnbG0ucHJvYnMgPSBwcmVkaWN0KGdsbS5maXQsdHlwZT0icmVzcG9uc2UiKQ0KZ2xtLnByZWQ9aWZlbHNlKGdsbS5wcm9icz4wLjUsMSwwKQ0KYGBgDQoNCkRpc2N1c3Npb24NCg0KYGBge3J9DQp0YWJsZShnbG0ucHJlZCxkZiRudW0pICNhbGxvd3MgdXMgdG8gY29tcGFyZSBvdXIgcHJlZGljdGlvbnMgdG8gdGhlIGFjdHVhbCBkYXRhDQptZWFuKGdsbS5wcmVkPT1kZiRudW0pDQpgYGANCg0KIyMgTGluZWFyIERpc2NyaW1pbmFudCBBbmFseXNpcw0KRGVzY3JpcHRpb24NCg0KYGBge3J9DQpIZWFydD1sZGEoZGYkbnVtfmNob2wrdGhhbGFjaCt0cmVzdGJwcytvbGRwZWFrLGRhdGE9ZGYsc3Vic2V0PWFnZTw9NTUpDQp0cmFpbiA9IHN1YnNldChkZixhZ2U+NTUpDQpsZGEucHJlZD1wcmVkaWN0KEhlYXJ0LHRyYWluKQ0KZGZsZGEgPSBkYXRhLmZyYW1lKGxkYS5wcmVkKQ0KDQpgYGANCiANCiBEaXNjdXNzaW9uDQogDQpgYGB7cn0NCnJlbmRlclBsb3QoZ2dwbG90KGRmbGRhKSArIGdlb21faGlzdG9ncmFtKG1hcHBpbmcgPSBhZXMoeD1MRDEpLCBjb2xvcj0iYmx1ZSIpICsgZmFjZXRfd3JhcCh+Y2xhc3MpKQ0KYGBgDQoNCkRpc2N1c3Npb24NCg0KYGBge3J9DQpyZW5kZXJQbG90KGdncGxvdChkZmxkYSkgKyBnZW9tX2JveHBsb3QobWFwcGluZyA9IGFlcyh4PWNsYXNzLCB5PUxEMSksIGNvbG9yID0gImJsdWUiKSkNCmBgYA0KDQpEaXNjdXNzaW9uDQoNCmBgYHtyfQ0KdGFibGUobGRhLnByZWQkY2xhc3MsdHJhaW4kbnVtKQ0KDQptZWFuKGxkYS5wcmVkJGNsYXNzPT10cmFpbiRudW0pDQpgYGANCg0KIyMgUXVhZHJhdGljIERpc2NyaW1pbmFudCBBbmFseXNpcw0KRGVzY3JpcHRpb24NCmBgYHtyfQ0KcWRhLmZpdCA9IHFkYShudW1+YWdlK3RyZXN0YnBzLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKQ0KcWRhLmZpdA0KYGBgDQoNCg0KYGBge3J9DQpxZGEuZml0ID0gcWRhKG51bX5hZ2UrdHJlc3RicHMrY2hvbCt0aGFsYWNoK29sZHBlYWssZGF0YT1kZixmYW1pbHk9Ymlub21pYWwpDQpxZGEuZml0DQpgYGANCiMjIEstTmVhcmVzdCBOZWlnaGJvcnMNCkZvciB0aGUgRmlyc3QgSy1OZWFyZXN0IE5laWdoYm9ycyB0ZXN0LCB3ZSB1c2VkIGNob2xlc3Rlcm9sIGFuZCBzZXggaW4gb3JkZXIgdG8gcHJlZGljdCBpZiBhbiBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXNlLiBUaGlzIGNodW5rIHNob3dzIHRoZSBjb2RlIGFuZCBwcm9jZWR1cmUgdGhhdCB3ZSB0b29rIHRvIGFuYWx5c2UgdGhlIGRhdGEuIEFzIG1lbnRpb25lZCBlYXJsaWVyLCB0aGUgMCBtZWFucyB0aGF0IHRoZXkgRE8gTk9UIGhhdmUgaGVhcnQgZGlzZWFzZSBhbmQgMSBtZWFucyB0aGF0IHRoZXkgRE8gaGF2ZSBoZWFydCBkaXNlYWUuIEJlbG93IGFyZSB0aGUgcmVzdWx0cyBvZiB0aGUgS05OIGFuYWx5c2lzIHdpdGggdGhlIGNob2xlc3Rlcm9sIGFuZCBzZXggY2lydGVyaWEgdXNlZCBmb3IgcHJlZGl0aW9ucy4gQXMgb25lIGNhbiwgdGhlc2UgYXR0cmlidXRlcyBhcmUgbm90IGdvb2QgcHJlZGljdG9ycyBhcyB0aGUgbWVhbiBpcyBhcm91bmQgNTAlIHdoaWNoIGlzIG5vdCB2ZXJ5IGJlbmlmaWNpYWwgdG8gdXMuDQoNCmBgYHtyfQ0KDQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAxOiBVc2luZyBDaG9sZXN0ZXIgYW5kIHNleCB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDEgPSBjYmluZChkZiRjaG9sLGRmJHNleCkNCg0Ka25uLnByZWQxID0ga25uKHRlc3QxW3RyYWluLF0sIHRlc3QxWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpDQp0YWJsZShrbm4ucHJlZDEsZGYkbnVtWyF0cmFpbl0pDQptZWFuKGtubi5wcmVkMT09ZGYkbnVtWyF0cmFpbl0pDQpgYGANCg0KV2UgdGhlbiBjb250aW51ZWQgdG8gc2lmdCB0aHJvdWdoIHRoZSBkYXRhIGFuZCBmb3VuZCBtdWNoIGJldHRlciBwcmVkaWN0b3JzIHdpdGggb2xkcGVhayAod2hpY2ggaXMgYSBtZWFzdXJlIG9mIGRlcHJlc3Npb24gc2V0IHVwb24gYnkgZXhjZXJzaWUgcmVsYXRpdmUgdG8gcmVzdCkgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgbGV2ZWwuIFRoZSByZXN1bHRzIG9mIHRoaXMgYW5hbHlzaXMgYXJlIGJldHRlciB0aGFuIHRoZSBwcmV2aW91cyBvbmUgd2l0aCBhIG1lYW4gY2xvc2VyIHRvIGFyb3VuZCA3NSUNCg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWQyID0ga25uKHRlc3QyW3RyYWluLF0sIHRlc3QyWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpDQp0YWJsZShrbm4ucHJlZDIsZGYkbnVtWyF0cmFpbl0pDQptZWFuKGtubi5wcmVkMj09ZGYkbnVtWyF0cmFpbl0pDQpgYGANCg0KSW4gb3JkZXIgdG8gYmUgdGhvcm91Z2gsIHdlIGRpZCBvbmUgbW9yZSBhbmFseXNpcyB3aXRoIHR3byBkaWZmZXJlbnQgY3JpdGVyaWEgdG8gc2VlIGlmIHdlIGNhbiBmaW5kIGV2ZW4gYmV0dGVyIHByZWRpY3RvcnMuIEZvciB0aGUgbGFzdCBhbmFseXNpcyB3ZSBjaG9zZSByZXN0aW5nIGJsb29kIHByZXNzdXJlIGFuZCB0eXBlIG9mIGNoZXN0cGFpbi4gV2hpbGUgdGhpcyBhbmFseXNpcyBzdGlsbCBoZWxkIHNvbWUgc29saWQgcmVzdWx0cywgaXQgd2FzIG5vdCBhcyBnb29kIGFzIHRoZSBhbmFseXNpcyBkb25lIHdpdGggb2xkcGFrIGFuZCBmYXN0aW5nIGJsb29kIHN1Z2FyLg0KDQpgYGB7cn0NCg0KIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YQ0KdHJhaW4gPSBkZiRhZ2UgPiA1MA0KDQojIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlDQp0ZXN0MyA9IGNiaW5kKGRmJHRyZXN0YnBzLGRmJGNoZXN0cGFpbikNCg0Ka25uLnByZWQzID0ga25uKHRlc3QzW3RyYWluLF0sIHRlc3QzWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpDQp0YWJsZShrbm4ucHJlZDMsZGYkbnVtWyF0cmFpbl0pDQptZWFuKGtubi5wcmVkMz09ZGYkbnVtWyF0cmFpbl0pDQpgYGANCg0KTGFzdGx5LCB0byBjb250aW51ZSBmaW5kaW5nIHRoZSBiZXN0IG9wdGltaXphdGlvbiBvZiB0aGlzIG1ldGhvZCwgd2UgdmFyaWVkIHRoZSBLIHRvIHNlZSBpZiB0aGUgcmVzdWx0cyB3b3VsZCBjaGFuZ2UuIFdlIGNob3NlIHRvIHVzZSB0aGUgY3JpdGVyaWEgdGhhdCBnYXZlIHVzIHRoZSBiZXN0IHJldWx0cyBpbiBob3BlIHRoYXQgd2UgY2FuIGZpbmQgZXZlbiBiZXR0ZXIgcmVzdWx0cy4gQXMgc2VlbiBieSB0aGUgcmVzdXRzIGJlbG93LCB0aGUgdmFyaWVuY2UgYmV0d2VlbiB0aGUgbWVhbnMgaXMgbm90IG9mIGZhaXJseSBsYXJnZSBzaWduaWZpY2FuY2UsIHNvIHRoZSBzaXplIG9mIEsgZGlkIG5vdCBoYXZlIGEgbWFqb3IgYWZmZWN0IG9uIHRoZSBhY2N1cmFjeSBvZiB0aGUgYW5hbHlzaXMuDQoNCmBgYHtyfQ0KDQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWRrMyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz0zKQ0KbWVhbihrbm4ucHJlZGszPT1kZiRudW1bIXRyYWluXSkNCg0Ka25uLnByZWRrNSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz01KQ0KbWVhbihrbm4ucHJlZGs1PT1kZiRudW1bIXRyYWluXSkNCg0Ka25uLnByZWRrNyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz03KQ0KbWVhbihrbm4ucHJlZGs3PT1kZiRudW1bIXRyYWluXSkNCg0Ka25uLnByZWRrOSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz05KQ0KbWVhbihrbm4ucHJlZGs5PT1kZiRudW1bIXRyYWluXSkNCg0KYGBgDQoNCg==</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByb2plY3QgMjogUHJlZGljdGlvbiBvZiBIZWFydCBEaXNlYXNlIg0KYXV0aG9yOiAiR3JvdXAgODogSmFja2llIExlZSwgSnVhbiBHb21leiwgUGF0cmljayBMeW9ucywgUm9zcyBNaWdsaW4iDQpyZXNvdXJjZV9maWxlczoNCi0gLlJlbnZpcm9uDQpvdXRwdXQ6DQogIGh0bWxfbm90ZWJvb2s6DQogICAgY29kZV9mb2xkaW5nOiBoaWRlDQogICAgdG9jOiB5ZXMNCiAgICB0b2NfZGVwdGg6IDQNCiAgICB0b2NfZmxvYXQ6IHllcw0KcnVudGltZTogc2hpbnkNCi0tLQ0KDQpgYGB7ciBzZXR1cCwgaW5jbHVkZT1GQUxTRX0NCnJlcXVpcmUoZGF0YS53b3JsZCkNCnJlcXVpcmUoTUFTUykNCnJlcXVpcmUoSVNMUikNCnJlcXVpcmUoZHBseXIpDQpyZXF1aXJlKGdncGxvdDIpDQpyZXF1aXJlKGhleGJpbikNCnJlcXVpcmUoanNvbmxpdGUpDQpyZXF1aXJlKHNoaW55KQ0KcmVxdWlyZShyc2Nvbm5lY3QpDQpyZXF1aXJlKGtuaXRyKQ0KcmVxdWlyZShsdWJyaWRhdGUpDQpyZXF1aXJlKHJtYXJrZG93bikNCnJlcXVpcmUodGlkeXIpDQpsaWJyYXJ5KHJzY29ubmVjdCkNCmxpYnJhcnkoY2xhc3MpDQprbml0cjo6b3B0c19jaHVuayRzZXQoZWNobyA9IFRSVUUpDQpgYGANCiAgDQojIyAqKlIgU2Vzc2lvbiBJbmZvKioNCmBgYHtyfQ0Kc2Vzc2lvbkluZm8oKQ0KYGBgDQoNCiMjICoqQ29ubmVjdGluZyB0byBkYXRhLndvcmxkKioNCg0KYGBge3J9DQpwcm9qZWN0IDwtICJodHRwczovL2RhdGEud29ybGQvamxlZS9mLTE3LWVkYS1wcm9qZWN0LTIiDQpkYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoIkRXX0FQSSIpKQ0KZGYgPC0gZGF0YS53b3JsZDo6cXVlcnkoZGF0YS53b3JsZDo6cXJ5X3NxbCgiU0VMRUNUICogRlJPTSBoZWFydGRpc2Vhc2UiKSwgZGF0YXNldCA9IHByb2plY3QpDQoNCmRmJG51bVtkZiRudW0gPiAwXSA8LSAxDQoNCmRmJHNleFtkZiRzZXggPT0gIm1hbGUiXSA8LSAxDQpkZiRzZXhbZGYkc2V4ID09ICJmZW1hbGUiXSA8LSAwDQoNCmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gInR5cGljYWwgYW5naW5hIl0gPC0gMQ0KZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSAiYXR5cGljYWwgYW5naW5hIl0gPC0gMg0KZGYkY2hlc3RwYWluW2RmJGNoZXN0cGFpbiA9PSAibm9uLWFuZ2luYWwgcGFpbiJdIDwtIDMNCmRmJGNoZXN0cGFpbltkZiRjaGVzdHBhaW4gPT0gImFzeW1wdG9tYXRpYyJdIDwtIDMNCg0KZGYkZmJzW2RmJGZicyA9PSAidHJ1ZSJdIDwtIDENCmRmJGZic1tkZiRmYnMgPT0gImZhbHNlIl0gPC0gMA0KYGBgDQoNCiMjICoqSW50cm9kdWN0aW9uKiogDQpGb3IgdGhpcyBwcm9qZWN0LCB3ZSBkZWNpZGVkIHRvIHVzZSBkYXRhIGFib3V0IGhlYXJ0IGRpc2Vhc2UuIFRoaXMgZGF0YSBzZXQgaW5jbHVkZXMgZmFjdG9ycyB0aGF0IGNvdWxkIHBvdGVudGlhbGx5IGluZGljYXRlIHN1Y2ggYXMgZmFzdGluZyBibG9vZCBzdWdhciBsZXZlbHMsIHJlc3RpbmcgaGVhcnQgcmF0ZSwgYW5kIGNob2xlc3Rlcm9sIGFtb25nIG90aGVycy4gVGhlc2UgYXR0cmlidXRlcyB3aGVyZSB0aGVuIHVzZWQgdG8gZGV0ZXJtaW5lZCB3aGV0aGVyIGFuZCBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXNlIG9yIG5vdCBhbmQgaXQgcmFua3MgdGhlIHNldmVyaXR5IG9mIHRoZWlyIGNvbmRpdGlvbi4gb3IgdGhlIHNha2Ugb2YgcHJvamVjdCBjYWxjdWxhdGlvbnMsIHdlIGRpZCBub3QgaW5jbHVkZSB0aGUgcmFua2luZyBzeXN0ZW0gYW5kIGNoYW5nZWQgdGhlIGRhdGEgc2V0IHNvIGl0IGlzIHJlZmxlY3RpdmUgb2Ygd2hldGhlciB0aGV5IGhhdmUgaGVhcnQgZGlzZWFzZSBvciBub3QuIEluIG9yZGVyIHRvIHByZWRpY3QgdGhlc2UsIHdlIGFyZSBjb21wYXJpbmcgZm91ciBkaWZmZXJlbnQgbW9kZWxzOiBMb2dpc3RpY2FsIFJlZ3Jlc3Npb24sIExpbmVhciBEaXNjcmltaW5hbnQgQW5hbHlzaXMsIFF1YWRyYXRpYyBEaXNjcmltaW5hbnQgQW5hbHlzaXMsIGFuZCBLLU5lYXJlc3QgTmVpZ2hib3JzLg0KDQoNCg0KIyMgKipMb2dpc3RpY2FsIFJlZ3Jlc3Npb24qKg0KRm9yIHRoZSBsb2dpc3RpYyByZWdyZXNzaW9uIG9mIHRoaXMgbW9kZWwsIHdlIHNlZSBmcm9tIHRoZSBzdW1tYXJ5IG9mIHRoZSBnbG0uZml0IHRoYXQgYm90aCB0aGUgdGhhbGFjaCBhbmQgb2xkcGVhayB2YXJpYWJsZXMgYXJlIHNpZ25pZmljYW50bHkgY29ycmVsYXRlZCBwcmVkaWN0b3JzIG9mIGhlYXJ0IGRpc2Vhc2UuIEFzIGEgcmVmcmVzaGVyLCB0aGFsYWNoIGlzIHRoZSBtYXhpbXVtIGhlYXJ0IHJhdGUgYWNoaWV2ZWQgYW5kIG9sZHBlYWsgaXMgU1QgZGVwcmVzc2lvbiBpbmR1Yy4gVGhlIGNvZWZmaWNpZW50IG9uIHRoYWxhY2gsIG9yIG1heCBoZWFydCByYXRlIGFjaGlldmVkLCBpcyBuZWdhdGl2ZSwgd2hpY2ggbWVhbnMgdGhhdCBhIGxvd2VyIG1heGltdW0gaGVhcnQgcmF0ZSBhY2hpZXZlZCBpcyBtb3JlIGNvcnJlbGF0ZWQgdG8gaGF2aW5nIGhlYXJ0IGRpc2Vhc2UgdGhhbiBhIGhpZ2hlciBtYXhpbXVtIGhlYXJ0IHJhdGUuIFRoZSBjb2VmZmljaWVudCBvbiBvbGRwZWFrLCBvciBTVCBkZXByZXNzaW9uIGluZHVjLiwgaXMgcG9zaXRpdmUsIGluZGljYXRpbmcgdGhhdCBhIGRlcHJlc3Npb24gb2YgdGhlIFNUIHNlZ21lbnQgaXMgY29ycmVsYXRlZCB0byBoZWFydCBkaXNlYXNlLiBVcG9uIHJlc2VhcmNoaW5nIHRoaXMgYXJlYSBmdXJ0aGVyLCB0aGlzIGNoZWNrcyBvdXQsIGFzIFNULXNlZ21lbnQgZGVwcmVzc2lvbiBpcyB3ZWxsLXN0dWRpZWQgaW4gdGhlIG1lZGljYWwgY29tbXVuaXR5IGFuZCBpcyBzdHJvbmdseSBsaW5rZWQgdG8gaGVhcnQgYWJub3JtYWxpdGllcy4NCg0KYGBge3J9DQpnbG0uZml0PWdsbShkZiRudW1+YWdlK3RyZXN0YnBzK2Nob2wrdGhhbGFjaCtvbGRwZWFrLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKQ0Kc3VtbWFyeShnbG0uZml0KQ0KZ2xtLnByb2JzID0gcHJlZGljdChnbG0uZml0LHR5cGU9InJlc3BvbnNlIikNCmdsbS5wcmVkPWlmZWxzZShnbG0ucHJvYnM+MC41LDEsMCkNCmBgYA0KDQoNCioqRXhwbGFuYXRpb24vSW5zaWdodCBvbiBMb2dpc3RpY2FsIFJlZ3Jlc3Npb24qKg0KVGhlIG92ZXJhbGwgbW9kZWwsIHVzaW5nIHRoYWxhY2gsIG9sZHBlYWssIGFuZCAzIG90aGVyIHZhcmlhYmxlcyBhY2N1cmF0ZWx5IHByZWRpY3RlZCBoZWFydCBkaXNlYXNlIDcyJSBvZiB0aGUgdGltZS4NCg0KYGBge3J9DQp0YWJsZShnbG0ucHJlZCxkZiRudW0pICNhbGxvd3MgdXMgdG8gY29tcGFyZSBvdXIgcHJlZGljdGlvbnMgdG8gdGhlIGFjdHVhbCBkYXRhDQptZWFuKGdsbS5wcmVkPT1kZiRudW0pDQpgYGANCg0KDQoNCiMjICoqTGluZWFyIERpc2NyaW1pbmFudCBBbmFseXNpcyoqDQpJbiBvdXIgTGluZWFyIERpc2NyaW1pbmFudCBBbmFseXNpcywgd2UncmUgcHJlZGljdGluZyBpZiBhbiBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXNlIGJhc2VkIG9uIGZvdXIgZmFjdG9yczpjaG9sLHRoYWxhY2gsdHJlc3RicHMsb2xkcGVhayAoY2hvbD1jaG9sZXN0ZXJvbCwgdGhhbGFjaD1tYXhpbXVtIGhlYXJ0IHJhdGUgYWNoaWV2ZWQsIHRyZXN0YnBzPXBlYWsgZXhlcmNpc2UgYmxvb2QgcHJlc3N1cmUsIG9sZHBlYWs9U1QgZGVwcmVzc2lvbiBpbmR1Y2VkIGJ5IGV4ZXJjaXNlIHJlbGF0aXZlIHRvIHJlc3QpLiBPdXIgdHJhaW5pbmcgc2V0IHdpbGwgYmUgZm9yIGluZGl2aWR1YWxzIGxlc3MgdGhhbiBvciBlcXVhbCB0byB0aGUgYWdlIG9mIDU1IGFuZCBvdXIgdGVzdGluZyBzZXQgd2lsbCBiZSBmb3IgaW5kaXZpZHVhbHMgb3ZlciB0aGUgYWdlIG9mIDU1LiBUaGUgdmFsdWVzIG9mIG51bSBhcmUgMCBhbmQgMS4gMCBtZWFucyBubyBoZWFydCBkaXNlYXNlIGFuZCAxIHJlcHJlc2VudHMgaGF2aW5nIGhlYXJ0IGRpc2Vhc2UuDQoNCg0KYGBge3J9DQpkZiRudW1bZGYkbnVtID4gMF0gPC0gMQ0KSGVhcnQ9bGRhKGRmJG51bX5jaG9sK3RoYWxhY2grdHJlc3RicHMrb2xkcGVhayxkYXRhPWRmLHN1YnNldD1hZ2U8PTU1KQ0KSGVhcnQNCnJlbmRlclBsb3Qoe3Bsb3QoSGVhcnQpfSkNCg0KdHJhaW4gPSBzdWJzZXQoZGYsYWdlPjU1KQ0KbGRhLnByZWQ9cHJlZGljdChIZWFydCx0cmFpbikNCmRmbGRhID0gZGF0YS5mcmFtZShsZGEucHJlZCkNCmBgYA0KDQoNCioqSW50ZXJhY3RpdmUgTGluZWFyIERpc2NyaW1pbmFudCBIaXN0b2dyYW0qKg0KYGBge3J9DQpzbGlkZXJJbnB1dCgiYmlucyIsICJOdW1iZXIgb2YgYmluczoiLCBtaW4gPSAxMCwgbWF4ID0gNTAsIHZhbHVlID0gMzApDQoNCg0KcmVuZGVyUGxvdCh7DQogIHggPC0gZGZsZGEkTEQxDQogIGJpbnMgPC0gc2VxKG1pbih4KSwgbWF4KHgpLCBsZW5ndGgub3V0ID0gaW5wdXQkYmlucyArIDEpDQogIGdncGxvdChkZmxkYSkgKyBnZW9tX2hpc3RvZ3JhbShtYXBwaW5nID0gYWVzKHg9TEQxKSwgYnJlYWtzID0gYmlucywgY29sb3I9ImJsdWUiKSArIGZhY2V0X3dyYXAofmNsYXNzKX0pDQpgYGANCg0KDQoqKkxpbmVhciBEaXNjcmltaW5hbnQgQm94cGxvdCoqDQpgYGB7cn0NCnJlbmRlclBsb3QoZ2dwbG90KGRmbGRhKSArIGdlb21fYm94cGxvdChtYXBwaW5nID0gYWVzKHg9Y2xhc3MsIHk9TEQxKSwgY29sb3IgPSAiYmx1ZSIpKQ0KYGBgDQoNCg0KKipDb25mdXNpb24gTWF0cml4KioNCmBgYHtyfQ0KdGFibGUobGRhLnByZWQkY2xhc3MsdHJhaW4kbnVtKQ0KYGBgDQoNCg0KKipNb2RlbCBNZWFuIEFjY3VyYWN5IFJhdGUqKg0KYGBge3J9DQptZWFuKGxkYS5wcmVkJGNsYXNzPT10cmFpbiRudW0pDQpgYGANCg0KDQoqKkV4cGxhbmF0aW9uL0luc2lnaHQgb24gTERBKioNCkxvb2tpbmcgYXQgdGhlIGNvbmZ1c2lvbiBtYXRyaXgsIHdlIGNhbiBzZWUgdGhhdCBvdXQgb2YgNjIgbm8gaGVhcnQgZGlzZWFzZXMsIDQwIHdlcmUgY2xhc3NpZmllZCBhcyBubyBoZWFydCBkaXNlYXNlcy4gQW5kIG91dCBvZiA5MCBoZWFydCBkaXNlYXNlcywgNTYgd2VyZSBjbGFzc2lmaWVkIGFzIGhlYXJ0IGRpc2Vhc2VzLiBTbyB0aGUgbGluZWFyIGRpc2NyaW1pbmFudCBtb2RlbCBnaXZlcyBhIG1lYW4gb2YgNjMlIG9mIGJlaW5nIGFjY3VyYXRlIGluIHByZWRpY3Rpbmcgd2hldGhlciBhbiBpbmRpdmlkdWFsIG92ZXIgdGhlIGFnZSBvZiA1NSBoYXMgb3IgZG9lc24ndCBoYXZlIGhlYXJ0IGRpc2Vhc2UuIFRoaXMgaXMgZmFpcmx5IGFjY3VyYXRlLCBidXQgd2Ugd2FudCB0byBjb21wYXJlIHRoZSByZXN1bHQgb2YgdGhpcyBtb2RlbCB3aXRoIHRoZSByZXN1bHRzIG9mIG90aGVyIG1vZGVscy4NCiANCiANCiANCiMjICoqUXVhZHJhdGljIERpc2NyaW1pbmFudCBBbmFseXNpcyoqDQpGb3IgdGhlIDQgaW5kaXZpZHVhbHMgd2l0aCBjaG9sZXN0ZXJvbCBhdCAyODIsIDQgb2YgdGhlIGluZGl2aWR1YWxzIGV4YW1pbmVkIGhhZCBoZWFydCBkaXNlYXNlLiBIb3dldmVyLCBvdXIgbW9kZWwgb25seSBwaWNrZWQgdXAgb24gaGFsZiBvZiB0aGVtIGhhdmluZyBpdC4NCmBgYHtyfQ0KcWRhLmZpdCA9IHFkYShkZiRudW1+YWdlK3RyZXN0YnBzK2Nob2wrdGhhbGFjaCtvbGRwZWFrLGRhdGE9ZGYsZmFtaWx5PWJpbm9taWFsKQ0KcWRhLmZpdA0KYGBgDQoNCg0KKipFeHBsYW5hdGlvbi9JbnNpZ2h0IG9uIFFEQSoqDQpXZSBwcmVkaWN0ZWQgdGhhdCBoaWdoIGNob2xlc3Rlcm9sICg+MjMwKSB3b3VsZCBiZSBhIGdvb2QgaW5kaWNhdG9yIG9mIGhlYXJ0IGRpc2Vhc2UsIGFuZCBpdCB0dXJucyBvdXQgdGhhdCB0aGVyZSdzIGEgNTAlIGFjY3VyYWN5IHJhdGUgd2l0aCBwcmVkaWN0aW5nIGhlYXJ0IGRpc2Vhc2Ugd2l0aGluIHRoaXMgcmFuZ2UgdXNpbmcgcXVhZHJhdGljIGRpc2NyaW1pbmFudCBhbmFseXNpcyBmb3IgY2hvbGVzdGVyb2wgbGV2ZWxzIGF0IDI4Mi4gT3VyIGN1cnJlbnQgUURBIG1vZGVsIHByZWRpY3RzIGhlYXJ0IGRpc2Vhc2UgNTAlIG9mIHRoZSB0aW1lLiBUaGlzIGlzIGFuIGluZGljYXRvciB0aGF0IG90aGVyIGZhY3RvcnMgY29tYmluZWQgd2l0aCBjaG9sZXN0ZXJvbCBsZXZlbHMgYXJlIHJlcXVpcmVkIHRvIGNyZWF0ZSBhbiBhY2N1cmF0ZSBoZWFydCBkaXNlYXNlIHByZWRpY3Rpb24uDQoNCmBgYHtyfQ0KZGYuMjgyID0gc3Vic2V0KGRmLGNob2w9PTI4MikNCnFkYS5jbGFzcyA9IHByZWRpY3QocWRhLmZpdCwgZGYuMjgyKQ0KdGFibGUocWRhLmNsYXNzJGNsYXNzLGRmLjI4MiRudW0pDQptZWFuKHFkYS5jbGFzcyRjbGFzcz09ZGYuMjgyJG51bSkNCmBgYA0KDQoNCg0KIyMgKipLLU5lYXJlc3QgTmVpZ2hib3JzKioNCkZvciB0aGUgRmlyc3QgSy1OZWFyZXN0IE5laWdoYm9ycyB0ZXN0LCB3ZSB1c2VkIGNob2xlc3Rlcm9sIGFuZCBzZXggaW4gb3JkZXIgdG8gcHJlZGljdCBpZiBhbiBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXNlLiBUaGlzIGNodW5rIHNob3dzIHRoZSBjb2RlIGFuZCBwcm9jZWR1cmUgdGhhdCB3ZSB0b29rIHRvIGFuYWx5c2UgdGhlIGRhdGEuIEFzIG1lbnRpb25lZCBlYXJsaWVyLCB0aGUgMCBtZWFucyB0aGF0IHRoZXkgRE8gTk9UIGhhdmUgaGVhcnQgZGlzZWFzZSBhbmQgMSBtZWFucyB0aGF0IHRoZXkgRE8gaGF2ZSBoZWFydCBkaXNlYWUuIEJlbG93IGFyZSB0aGUgcmVzdWx0cyBvZiB0aGUgS05OIGFuYWx5c2lzIHdpdGggdGhlIGNob2xlc3Rlcm9sIGFuZCBzZXggY2lydGVyaWEgdXNlZCBmb3IgcHJlZGl0aW9ucy4gQXMgb25lIGNhbiwgdGhlc2UgYXR0cmlidXRlcyBhcmUgbm90IGdvb2QgcHJlZGljdG9ycyBhcyB0aGUgbWVhbiBpcyBhcm91bmQgNTAlIHdoaWNoIGlzIG5vdCB2ZXJ5IGJlbmlmaWNpYWwgdG8gdXMuDQoNCg0KKipDb25mdXNpb24gTWF0cml4IGFuZCBNZWFuIG9mIENob2xlc3Rlcm9sIGFuZCBTZXggQW5hbHlzaXMqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAxOiBVc2luZyBDaG9sZXN0ZXIgYW5kIHNleCB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDEgPSBjYmluZChkZiRjaG9sLGRmJHNleCkNCg0Ka25uLnByZWQxID0ga25uKHRlc3QxW3RyYWluLF0sIHRlc3QxWyF0cmFpbixdLCBkZiRudW1bdHJhaW5dLCBrPTEpDQp0YWJsZShrbm4ucHJlZDEsZGYkbnVtWyF0cmFpbl0pDQptZWFuKGtubi5wcmVkMT09ZGYkbnVtWyF0cmFpbl0pDQpgYGANCg0KV2UgdGhlbiBjb250aW51ZWQgdG8gc2lmdCB0aHJvdWdoIHRoZSBkYXRhIGFuZCBmb3VuZCBtdWNoIGJldHRlciBwcmVkaWN0b3JzIHdpdGggb2xkcGVhayAod2hpY2ggaXMgYSBtZWFzdXJlIG9mIGRlcHJlc3Npb24gc2V0IHVwb24gYnkgZXhjZXJzaWUgcmVsYXRpdmUgdG8gcmVzdCkgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIgbGV2ZWwuIFRoZSByZXN1bHRzIG9mIHRoaXMgYW5hbHlzaXMgYXJlIGJldHRlciB0aGFuIHRoZSBwcmV2aW91cyBvbmUgd2l0aCBhIG1lYW4gY2xvc2VyIHRvIGFyb3VuZCA3NSUNCg0KDQoqKkNvbmZ1c2lvbiBNYXRyaXggYW5kIE1lYW4gb2YgRGVwcmVzc2lvbiBhbmQgRmFzdGluZyBCbG9vZCBTdWdhciBBbmFseXNpcyoqDQpgYGB7cn0NCiMgRXN0YWJsaXNoaW5nIHRyYWluaW5nIGRhdGENCnRyYWluID0gZGYkYWdlID4gNTANCg0KIyBUZXN0IDI6IFVzaW5nIGRlcHJlc3Npb24gKG9sZHBlYWspIGFuZCBmYXN0aW5nIGJsb29kIHN1Z2FyIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlDQp0ZXN0MiA9IGNiaW5kKGRmJG9sZHBlYWssZGYkZmJzKQ0KDQprbm4ucHJlZDIgPSBrbm4odGVzdDJbdHJhaW4sXSwgdGVzdDJbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9MSkNCnRhYmxlKGtubi5wcmVkMixkZiRudW1bIXRyYWluXSkNCm1lYW4oa25uLnByZWQyPT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQpUaHJvdWdoIHRoZSBwbG90IGJlbG93LCB3ZSBhcmUgYWJsZSB0byBhbmFseXplIHRoZSB2YXJpYWJsZSBvZiBSZXN0aW5nIEJsb29kIFByZXNzdXJlIG1vcmUgaW4gZGVwdGggdG8gZGV0ZXJtaW5lIGlmIGl0J3MgYSB2aWFibGUgcHJlZGljdG9yLg0KDQoNCioqUmVzdGluZyBCbG9vZCBQcmVzc3VyZSBEZW5zaXR5KioNCmBgYHtyLCBlY2hvPUZBTFNFfQ0KaW5wdXRQYW5lbCgNCiAgc2VsZWN0SW5wdXQoIm5fYnJlYWtzIiwgbGFiID0gIk51bWJlciBvZiBiaW5zOiIsDQogICAgICAgICAgICAgIGNob2ljZXMgPSBjKDEwLCAyMCwgMzUsIDUwKSwgc2VsZWN0ZWQgPSAyMCksDQogIHNsaWRlcklucHV0KCJid19hZGp1c3QiLCBsYWJlbCA9ICJCYW5kd2lkdGggYWRqdXN0bWVudDoiLA0KICAgICAgICAgICAgICBtaW4gPSAwLjIsIG1heCA9IDIsIHZhbHVlID0gMSwgc3RlcD0wLjIpDQopDQoNCnJlbmRlclBsb3Qoew0KICBoaXN0KGRmJHRyZXN0YnBzLCBwcm9iYWJpbGl0eSA9IFRSVUUsIGJyZWFrcyA9IGFzLm51bWVyaWMoaW5wdXQkbl9icmVha3MpLA0KICAgICAgIHhsYWIgPSAiUmVzdGluZyBCbG9vZCBQcmVzc3VyZSIsIG1haW4gPSAiIikNCiAgDQogIGRlbnMgPC0gZGVuc2l0eShkZiR0cmVzdGJwcywgYWRqdXN0ID0gaW5wdXQkYndfYWRqdXN0KQ0KICBsaW5lcyhkZW5zLCBjb2wgPSAiYmx1ZSIpDQp9KQ0KYGBgDQoNCkJlY2F1c2Ugb2YgdGhpcywgd2UgZGlkIG9uZSBtb3JlIGFuYWx5c2lzIHdpdGggdHdvIGRpZmZlcmVudCBjcml0ZXJpYSB0byBzZWUgaWYgd2UgY2FuIGZpbmQgZXZlbiBiZXR0ZXIgcHJlZGljdG9ycy4gRm9yIHRoZSBsYXN0IGFuYWx5c2lzIHdlIGNob3NlIHJlc3RpbmcgYmxvb2QgcHJlc3N1cmUgYW5kIHR5cGUgb2YgY2hlc3RwYWluLiBXaGlsZSB0aGlzIGFuYWx5c2lzIHN0aWxsIGhlbGQgc29tZSBzb2xpZCByZXN1bHRzLCBpdCB3YXMgbm90IGFzIGdvb2QgYXMgdGhlIGFuYWx5c2lzIGRvbmUgd2l0aCBvbGRwYWsgYW5kIGZhc3RpbmcgYmxvb2Qgc3VnYXIuDQoNCg0KKipDb25mdXNpb24gTWF0cml4IGFuZCBNZWFuIG9mIFJlc3RpbmcgQmxvb2QgUHJlc3N1cmUgYW5kIENoZXN0IFBhaW4gQW5hbHlzaXMqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAzOiBVc2luZyByZXN0aW5nIGJsb29kIHByZWFzc3VyZSBhbmQgY2hlc3QgcGFpbnMgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2UNCnRlc3QzID0gY2JpbmQoZGYkdHJlc3RicHMsZGYkY2hlc3RwYWluKQ0KDQprbm4ucHJlZDMgPSBrbm4odGVzdDNbdHJhaW4sXSwgdGVzdDNbIXRyYWluLF0sIGRmJG51bVt0cmFpbl0sIGs9MSkNCnRhYmxlKGtubi5wcmVkMyxkZiRudW1bIXRyYWluXSkNCm1lYW4oa25uLnByZWQzPT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQoNCkxhc3RseSwgdG8gY29udGludWUgZmluZGluZyB0aGUgYmVzdCBvcHRpbWl6YXRpb24gb2YgdGhpcyBtZXRob2QsIHdlIHZhcmllZCB0aGUgSyB0byBzZWUgaWYgdGhlIHJlc3VsdHMgd291bGQgY2hhbmdlLiBXZSBjaG9zZSB0byB1c2UgdGhlIGNyaXRlcmlhIHRoYXQgZ2F2ZSB1cyB0aGUgYmVzdCByZXVsdHMgaW4gaG9wZSB0aGF0IHdlIGNhbiBmaW5kIGV2ZW4gYmV0dGVyIHJlc3VsdHMuIEFzIHNlZW4gYnkgdGhlIHJlc3V0cyBiZWxvdywgdGhlIHZhcmllbmNlIGJldHdlZW4gdGhlIG1lYW5zIGlzIG5vdCBvZiBmYWlybHkgbGFyZ2Ugc2lnbmlmaWNhbmNlLCBzbyB0aGUgc2l6ZSBvZiBLIGRpZCBub3QgaGF2ZSBhIG1ham9yIGFmZmVjdCBvbiB0aGUgYWNjdXJhY3kgb2YgdGhlIGFuYWx5c2lzLg0KDQoNCg0KKipNZWFuIGZvciBrPTMqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWRrMyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz0zKQ0KbWVhbihrbm4ucHJlZGszPT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQoNCg0KKipNZWFuIGZvciBrPTUqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWRrNSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz01KQ0KbWVhbihrbm4ucHJlZGs1PT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQoNCg0KKipNZWFuIGZvciBrPTcqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWRrNyA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz03KQ0KbWVhbihrbm4ucHJlZGs3PT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQoNCg0KKipNZWFuIGZvciBrPTkqKg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGRmJGFnZSA+IDUwDQoNCiMgVGVzdCAyOiBVc2luZyBkZXByZXNzaW9uIChvbGRwZWFrKSBhbmQgZmFzdGluZyBibG9vZCBzdWdhciB0byBkZXRlcm1pbmUgaGVhcnQgZGlzZWFzZQ0KdGVzdDIgPSBjYmluZChkZiRvbGRwZWFrLGRmJGZicykNCg0Ka25uLnByZWRrOSA9IGtubih0ZXN0Mlt0cmFpbixdLCB0ZXN0MlshdHJhaW4sXSwgZGYkbnVtW3RyYWluXSwgaz05KQ0KbWVhbihrbm4ucHJlZGs5PT1kZiRudW1bIXRyYWluXSkNCmBgYA0KDQoqKkV4cGxhbmF0aW9uL0luc2lnaHQgb24gS05OKioNCkstTmVhcmVzdCBOZWlnaGJvcnMgd2FzIG9uZSBvZiB0aGUgbWV0aG9kcyB3aXRoIG1vcmUgZmxleGliaWxpdHkgdGhhdCByZWFsbHkgYWxsb3dlZCB1cyB0byBleHBsb3JlIHRoZSBkYXRhIG1vcmUgaW4gZGVwdGguIFRocm91Z2ggdmFyaW91cyBpdGVyYXRpb25zIHdpdGggZGlmZmVyZW50IHZhcmlhYmxlcywgd2Ugd2VyZSBhYmxlIHRvIGRldGVybWluZSB0aGUgYmVzdCBwcmVkaWN0b3IgY29tYmluYXRpb24gb2YgRGVwcmVzc2lvbiBhbmQgRmFzdGluZyBCbG9vZCBTdWdhci4gT25jZSB0aG9zZSB3ZXJlLCB3ZSB3ZXJlIGFibGUgdG8gZXhhbWluZSB0aGVzZSBwcmVkaWN0b3JzIHdpdGggZGlmZmVyZW50IEsgdmFsdWVzIHRvIHNlZSBpZiBpdCBjaGFuZ2UgdGhlIGFjY3VyYWN5LiBGb3IgdGhlIG1vc3QgcGFydCwgdGhlIGFjY3VyYWN5IGZvciB0aGlzIG1vZGVsIHN0aWxsIGhvdmVyZWQgYmV0d2VlbiA3NSUgYW5kIDc3JS4NCg0KIyMgKipDb25jbHVzaW9uKioNCkluIGNvbmNsdXNpb24sIHdlIGV4cGxvcmVkIGZvdXIgZGlmZmVyZW50IG1vZGVsOiBsb2dpc3RpYyByZWdyZXNzaW9uLCBsaW5lYXIgZGlzY3JpbWluYW50IGFuYWx5c2lzLCBxdWFkcmF0aWMgZGlzY3JpbWluYW50IGFuYWx5c2lzIGFuZCBLLW5lYXJlc3QgbmVpZ2hib3JzLiBXZSB0ZXN0ZWQgdGhlc2UgbW9kZWwgdXNpbmcgZGF0YSB3aXRoIHJlbGV2ZW50IGZhY3RvcnMgaW50byBkZXRlcm1pbmcgd2hldGhlciBhbiBpbmRpdmlkdWFsIGhhcyBoZWFydCBkaXNlYXMgb3Igbm90LiBPdXIgZmluZGluZ3Mgc2hvdyB0aGF0IHRoZSBsZWFzdCB2aWFibGUgbW9kZWwgd2FzIFFEQSBmb2xsb3dlZCBieSBMREEsIHdpdGggdGhvc2UgbW9kZWxzIGhhdmluZyBhbiBhY2N1cmFjeSBvZiA1MCUgYW5kIDYzJSByZXNwZWN0aXZlbHkuIExpbmVhciByZWdyZXNzaW9uIGFuZCBLTk4gd2VyZSB0aGUgbW9zdCBzdWNjZXNmdWwsIHByb3ZpZGluZyBhIG1lYW4gb2YgNzIlIGFuZCA3NSUgcmVzcGVjdGl2ZWx5LiBUaGUgbGVhc3Qgc3VjY2VzZnVsIG1vZGVscyBjb3VsZCBoYXZlIGJlZW4gaW1wcm92ZWQgYnkgc2VsZWN0ZWluZyBkaWZmZXJlbnQgdmFyaWFibGVzIHRvIHVzZSBpbiBob3BlcyB0aGF0IHdlIGNvdWxkIGZpbmQgY29ycmVsYXRpb25zIHRoYXQgd291bGQgbGVhZCB0byBtb3JlIGFjY3VyYXRlIHByZWRpY3Rpb25zLiBXaXRoIHRoYXQgc2FpZCwgdGhlIHR3byBtb3N0IHN1Y2Nlc2Z1bCBtb2RlbHMgY2FuIGJlIG1vZGlmaWVkIGFzIHdlbGwgaW4gYSB3YXkgdGhhdCB3ZSBjYW4gYmV0dGVyIGltcHJvdmUgdGhlIGFjY3VyYWN5IG9mIHRoZSBtb2RlbC4NCg0KDQo=</div>
 
 
 </div>
