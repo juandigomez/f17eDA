@@ -13,23 +13,35 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-library(tidyverse)
 require(data.world)
-require(dplyr)
 require(MASS)
+require(ISLR)
+require(dplyr)
 require(ggplot2)
+require(hexbin)
+require(jsonlite)
 require(shiny)
+require(rsconnect)
+require(knitr)
+require(lubridate)
+require(rmarkdown)
+require(tidyr)
 library(rsconnect)
 library(class)
 knitr::opts_chunk$set(echo = TRUE)
 ```
   
+## **R Session Info**
+```{r}
+sessionInfo()
+```
+
+## **Connecting to data.world**
 
 ```{r}
 project <- "https://data.world/jlee/f-17-eda-project-2"
 data.world::set_config(cfg_env("DW_API"))
 df <- data.world::query(data.world::qry_sql("SELECT * FROM heartdisease"), dataset = project)
-regions = df %>% dplyr::distinct(region)
 
 df$num[df$num > 0] <- 1
 
@@ -43,14 +55,12 @@ df$chestpain[df$chestpain == "asymptomatic"] <- 3
 
 df$fbs[df$fbs == "true"] <- 1
 df$fbs[df$fbs == "false"] <- 0
-
 ```
 
 ## **Introduction** 
-For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart diseas or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.
+For this project, we decided to use data about heart disease. This data set includes factors that could potentially indicate such as fasting blood sugar levels, resting heart rate, and cholesterol among others. These attributes where then used to determined whether and individual has heart disease or not and it ranks the severity of their condition. or the sake of project calculations, we did not include the ranking system and changed the data set so it is reflective of whether they have heart disease or not. In order to predict these, we are comparing four different models: Logistical Regression, Linear Discriminant Analysis, Quadratic Discriminant Analysis, and K-Nearest Neighbors.
 
-
-## Logistical Regression
+## **Logistical Regression**
 Description
 
 ```{r}
@@ -66,38 +76,50 @@ table(glm.pred,df$num) #allows us to compare our predictions to the actual data
 mean(glm.pred==df$num)
 ```
 
-## Linear Discriminant Analysis
-Description
+## **Linear Discriminant Analysis**
+In our Linear Discriminant Analysis, we're predicting if an individual has heart disease based on four factors:chol,thalach,trestbps,oldpeak (chol=cholesterol, thalach=maximum heart rate achieved, trestbps=peak exercise blood pressure, oldpeak=ST depression induced by exercise relative to rest). Our training set will be for individuals less than or equal to the age of 55 and our testing set will be for individuals over the age of 55. The values of num are 0 and 1. 0 means no heart disease and 1 represents having heart disease.
 
 ```{r}
+df$num[df$num > 0] <- 1
 Heart=lda(df$num~chol+thalach+trestbps+oldpeak,data=df,subset=age<=55)
+Heart
+renderPlot({plot(Heart)})
+
 train = subset(df,age>55)
 lda.pred=predict(Heart,train)
 dflda = data.frame(lda.pred)
-
 ```
- 
- Discussion
- 
+
+**Interactive Linear Discriminant Histogram**
 ```{r}
-renderPlot(ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), color="blue") + facet_wrap(~class))
+sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
+
+
+renderPlot({
+  x <- dflda$LD1
+  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  ggplot(dflda) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
 ```
 
-Discussion
-
+**Linear Discriminant Boxplot**
 ```{r}
 renderPlot(ggplot(dflda) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
 ```
 
-Discussion
-
+**Confusion Matrix**
 ```{r}
 table(lda.pred$class,train$num)
+```
 
+**Model Mean Accuracy Rate**
+```{r}
 mean(lda.pred$class==train$num)
 ```
 
-## Quadratic Discriminant Analysis
+**Explanation/Insight on LDA**
+Looking at the confusion matrix, we can see that out of 62 no heart diseases, 40 were classified as no heart diseases. And out of 90 heart diseases, 56 were classified as heart diseases. So the linear discriminant model gives a mean of 63% of being accurate in predicting whether an individual over the age of 55 has or doesn't have heart disease. This is fairly accurate, but we want to compare the result of this model with the results of other models.
+ 
+## **Quadratic Discriminant Analysis**
 Description
 ```{r}
 qda.fit = qda(num~age+trestbps,data=df,family=binomial)
@@ -110,11 +132,11 @@ Discussion
 qda.fit = qda(num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
 qda.fit
 ```
-## K-Nearest Neighbors
+
+## **K-Nearest Neighbors**
 For the First K-Nearest Neighbors test, we used cholesterol and sex in order to predict if an individual has heart disease. This chunk shows the code and procedure that we took to analyse the data. As mentioned earlier, the 0 means that they DO NOT have heart disease and 1 means that they DO have heart diseae. Below are the results of the KNN analysis with the cholesterol and sex cirteria used for preditions. As one can, these attributes are not good predictors as the mean is around 50% which is not very benificial to us.
 
 ```{r}
-
 # Establishing training data
 train = df$age > 50
 
@@ -143,7 +165,6 @@ mean(knn.pred2==df$num[!train])
 In order to be thorough, we did one more analysis with two different criteria to see if we can find even better predictors. For the last analysis we chose resting blood pressure and type of chestpain. While this analysis still held some solid results, it was not as good as the analysis done with oldpak and fasting blood sugar.
 
 ```{r}
-
 # Establishing training data
 train = df$age > 50
 
@@ -158,7 +179,6 @@ mean(knn.pred3==df$num[!train])
 Lastly, to continue finding the best optimization of this method, we varied the K to see if the results would change. We chose to use the criteria that gave us the best reults in hope that we can find even better results. As seen by the resuts below, the varience between the means is not of fairly large significance, so the size of K did not have a major affect on the accuracy of the analysis.
 
 ```{r}
-
 # Establishing training data
 train = df$age > 50
 
@@ -176,6 +196,7 @@ mean(knn.predk7==df$num[!train])
 
 knn.predk9 = knn(test2[train,], test2[!train,], df$num[train], k=9)
 mean(knn.predk9==df$num[!train])
-
 ```
+
+## **Conclusion**
 
