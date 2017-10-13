@@ -21,8 +21,8 @@ attach(df)
 
 qda.fit = qda(num~age+trestbps+chol+thalach+oldpeak,data=df,family=binomial)
 qda.fit
-df.260 = subset(df,chol==260)
-qda.class = predict(qda.fit, df.260)
-table(qda.class$class,df.260$num)
-mean(qda.class$class==df.260$num)
+df.282 = subset(df,chol==282)
+qda.class = predict(qda.fit, df.282)
+table(qda.class$class,df.282$num)
+mean(qda.class$class==df.282$num)
 
