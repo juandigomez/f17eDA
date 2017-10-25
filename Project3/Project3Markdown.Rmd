@@ -1,0 +1,72 @@
+---
+title: "Project3"
+author: "Group 8"
+date: "October 25, 2017"
+output: html_document
+---
+
+Analysis on 2016 Election Data
+================
+
+##Introduction
+In order to analyze the methods discussed in class for model comparison, we decided to use data on the 2016 Presidential Election in order to make predictions of which candidate one based on different races and different occupations. This is especially interesting because we now know what factors where key in the success Trump. So we can make models and assumptions based on that information to see if these factors are as significant in our models as the were in real life.
+
+
+##Requiring data and initializing session
+We have retrieved our data and required the proper libraries in order to correctly compute our analysis.
+```{r}
+require(data.world)
+
+project <- "https://data.world/juandi/f-17-edaproject-3"
+
+df <- data.world::query(
+  data.world::qry_sql("SELECT * FROM electiondata"),
+  dataset = project
+)
+
+library(class)
+library(glmnet)
+library(leaps)
+```
+
+
+#K-Nearest Neighbors
+
+One of the methods used to conduct the analysis is K-Nearest Neighbors. Below shows the code and results for the analysis on this method.
+
+First of all, we must set the training data to conduct KNN. We use the votes variable since the amount of votes  per state has no real effect on who won.
+```{r}
+# Setting training data
+train = df$votes > 1000000
+```
+
+
+Our first test using KNN is using the white_pop and unemployment variable to predict a winner. As seen in the election, the white and unemployed voters were one of the demographics that largely voted for Trump.
+```{r}
+## Test 1: Using the white population percentage and unemployment population percentage
+
+#Binding predictors
+test1 = cbind(df$white_pop,df$unemployment)
+
+#Running KNN test
+knn.pred1 = knn(test1[train,], test1[!train,], df$candidate[train], k=1)
+```
+
+```{r}
+#Confusion matrix and mean
+table(knn.pred1,df$candidate[!train])
+mean(knn.pred1==df$candidate[!train])
+```
+
+
+```{r}
+## Test 2: Using the white population percentage and unemployment population percentage
+test2 = cbind(df$latino_pop,df$management_occup)
+
+#Running KNN test
+knn.pred1 = knn(test2[train,], test2[!train,], df$candidate[train], k=1)
+
+#Confusion matrix and mean
+table(knn.pred1,df$candidate[!train])
+mean(knn.pred1==df$candidate[!train])
+```
