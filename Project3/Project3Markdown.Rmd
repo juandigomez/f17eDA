@@ -1,19 +1,47 @@
 ---
-title: "Project3"
-author: "Group 8"
-date: "October 25, 2017"
-output: html_document
+title: "Project 3: Prediction of 2016 Election"
+author: "Group 8: Jackie Lee, Juan Gomez, Patrick Lyons, Ross Miglin"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+runtime: shiny
 ---
 
-Analysis on 2016 Election Data
-================
+```{r setup, include=FALSE}
+require(data.world)
+require(MASS)
+require(ISLR)
+require(dplyr)
+require(ggplot2)
+require(hexbin)
+require(jsonlite)
+require(shiny)
+require(rsconnect)
+require(knitr)
+require(lubridate)
+require(rmarkdown)
+require(tidyr)
+library(rsconnect)
+library(class)
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-##Introduction
+## **R Session Info**
+```{r}
+sessionInfo()
+```
+
+## **Introduction**
 In order to analyze the methods discussed in class for model comparison, we decided to use data on the 2016 Presidential Election in order to make predictions of which candidate one based on different races and different occupations. This is especially interesting because we now know what factors where key in the success Trump. So we can make models and assumptions based on that information to see if these factors are as significant in our models as the were in real life.
 
 
-##Requiring data and initializing session
-We have retrieved our data and required the proper libraries in order to correctly compute our analysis.
+## **Requiring data and initializing session**
+We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at https://data.world/juandi/f-17-edaproject-3.
 ```{r}
 require(data.world)
 
@@ -30,7 +58,7 @@ library(leaps)
 ```
 
 
-#K-Nearest Neighbors
+## **K-Nearest Neighbors**
 
 One of the methods used to conduct the analysis is K-Nearest Neighbors. Below shows the code and results for the analysis on this method.
 
@@ -70,3 +98,43 @@ knn.pred1 = knn(test2[train,], test2[!train,], df$candidate[train], k=1)
 table(knn.pred1,df$candidate[!train])
 mean(knn.pred1==df$candidate[!train])
 ```
+
+## **Linear Discriminant Analysis**
+Now, we want to predict the candidate using LDA. In this model, we create a sample for our training set.
+
+```{r}
+train2 <- sample(1:50, 25)
+candidates2=lda(candidate~graduates_degree+asian_american_pop+bachelors+pct_dem,data=df,prior=c(1,1)/2,subset=train2)
+candidates2
+renderPlot({plot(candidates2)})
+lda.pred2=predict(candidates2, df[-train2, ])
+dflda2 = data.frame(lda.pred2)
+table(lda.pred2$class,df[-train2, ]$candidate)
+mean(lda.pred2$class==df[-train2, ]$candidate)
+```
+
+**Interactive Histogram and Boxplot**
+```{r}
+sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
+
+
+renderPlot({
+  x <- dflda2$LD1
+  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  ggplot(dflda2) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+
+renderPlot(ggplot(dflda2) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
+```
+
+**Using Predictors from KNN Best Subset Regression**
+```{r}
+candidates3=lda(candidate~pct_rep+less_than_high_school+asian_american_pop+unemployment,data=df,prior=c(1,1)/2,subset=train2)
+candidates3
+lda.pred3=predict(candidates3, df[-train2, ])
+dflda3 = data.frame(lda.pred3)
+table(lda.pred3$class,df[-train2, ]$candidate)
+mean(lda.pred3$class==df[-train2, ]$candidate)
+```
+
+**Conclusion**
+First we ran every single predictor alone through LDA, and then picked the predictors that we believed to be the best at predicting candidate. From there, we ran the LDA model for the four predictors that we picked. Next we wanted to compare the results of our model to the predictors from the best subset regression that are in the KNN analysis. After running those four predictors through the LDA model, we came to the conclusion that the predictors we picked are slightly better at predicting the candidate because of the higher mean accuracy rate from our model. All in all, our LDA model strongly predicts the right candidate.
