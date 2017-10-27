@@ -56,7 +56,7 @@ library(class)
 library(glmnet)
 library(leaps)
 ```
-## **Simple and Multiple Linear Regressions
+## **Simple and Multiple Linear Regressions**
 
 We started our analysis by choosing one or more variables to plot vs. candidates and adding trendlines to those plots. We first focused on how one's occupation might affect their voting preference.
 
@@ -173,7 +173,7 @@ g=glm(candidate~less_than_high_school,data=df,family=binomial)
 curve(predict(g,data.frame(less_than_high_school=x),type="resp"),add=TRUE)
 points(less_than_high_school,fitted(g),pch=20)
 ```
-And finally, we identified the greatest predictor of candidate, the bachelors_degree, evidenced by the highest mean value.
+And finally, we identified the greatest predictor of candidate, graduates_degree, evidenced by the highest mean value.
 ```{r}
 glm.fit3 <- glm(candidate~graduates_degree+less_than_high_school, data=df,family=binomial)
 summary(glm.fit3)
