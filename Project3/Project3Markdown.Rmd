@@ -7,7 +7,7 @@ output:
   html_notebook:
     code_folding: hide
     toc: yes
-    toc_depth: 6
+    toc_depth: 8
     toc_float: yes
 runtime: shiny
 ---
@@ -52,18 +52,20 @@ df <- data.world::query(
   dataset = project
 )
 
+attach(df)
 library(class)
 library(glmnet)
 library(leaps)
 ```
+
 ## **Simple and Multiple Linear Regressions**
 
 We started our analysis by choosing one or more variables to plot vs. candidates and adding trendlines to those plots. We first focused on how one's occupation might affect their voting preference.
 
 ```{r}
 #Setting categorical variables to numeric in order to graph output
-df$candidate[df$candidate == "Trump"] <- 0
-df$candidate[df$candidate == "Clinton"] <- 1
+df$candidate[df$candidate == "Trump"] <- 1
+df$candidate[df$candidate == "Clinton"] <- 0
 df$candidate = as.numeric(df$candidate)
 
 plot(formula = candidate~management_occup, data=df)
@@ -72,7 +74,7 @@ fitOccup = lm(forumla=candidate~management_occup, data=df)
 fitOccup
 summary(fitOccup)
 ```
-Since the dependent variable of our data is binary (0 for Trump, 1 for Clinton), laying a linear regression line on the data doesn't highlight valuable correlation. We graphed the residuals against the fitted data to resolve this issue.
+Since the dependent variable of our data is binary (1 for Trump, 0 for Clinton), laying a linear regression line on the data doesn't highlight valuable correlation. We graphed the residuals against the fitted data to resolve this issue.
 ```{r}
 #Residuals Plot
 fitOccup2 = lm(management_occup~agri_occup+candidate,data=df)
@@ -91,6 +93,7 @@ points(management_occup,fitted(fitOccup3),col="blue",pch=20)
 summary(fitOccup3)
 plot(fitOccup3)
 ```
+
 ## **K-Nearest Neighbors**
 
 One of the methods used to conduct the analysis is K-Nearest Neighbors. Below shows the code and results for the analysis on this method.
@@ -131,16 +134,55 @@ knn.pred1 = knn(test2[train,], test2[!train,], df$candidate[train], k=1)
 table(knn.pred1,df$candidate[!train])
 mean(knn.pred1==df$candidate[!train])
 ```
+
+## **Linear Discriminant Analysis**
+Now, we want to predict the candidate using LDA. In this model, we create a sample for our training set.
+
+```{r}
+train2 <- sample(1:50, 25)
+candidates2=lda(candidate~graduates_degree+asian_american_pop+bachelors+pct_dem,data=df,prior=c(1,1)/2,subset=train2)
+candidates2
+renderPlot({plot(candidates2)})
+lda.pred2=predict(candidates2, df[-train2, ])
+dflda2 = data.frame(lda.pred2)
+table(lda.pred2$class,df[-train2, ]$candidate)
+mean(lda.pred2$class==df[-train2, ]$candidate)
+```
+
+**Interactive Histogram and Boxplot**
+```{r}
+sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
+
+
+renderPlot({
+  x <- dflda2$LD1
+  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  ggplot(dflda2) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+
+renderPlot(ggplot(dflda2) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
+```
+
+**Using Predictors from Best Subset Regression**
+```{r}
+candidates3=lda(candidate~pct_rep+less_than_high_school+asian_american_pop+unemployment,data=df,prior=c(1,1)/2,subset=train2)
+candidates3
+lda.pred3=predict(candidates3, df[-train2, ])
+dflda3 = data.frame(lda.pred3)
+table(lda.pred3$class,df[-train2, ]$candidate)
+mean(lda.pred3$class==df[-train2, ]$candidate)
+```
+First we ran every single predictor alone through LDA, and then picked the predictors that we believed to be the best at predicting candidate. From there, we ran the LDA model for the four predictors that we picked. Next we wanted to compare the results of our model to the predictors from the best subset regression that are from the KNN analysis. After running those four predictors through the LDA model, we came to the conclusion that the predictors we picked are slightly better at predicting the candidate because of the higher mean accuracy rate from our model. All in all, the LDA model strongly predicts the right candidate.
+
 ## **Logistic Regression Analysis**
 Here, we used logistic regression to predict the candidate by experimenting with several variables in the dataset.
 
 ```{r}
 #Exactly as we had to do for the multiple linear regression, here we setting categorical variables to a binary, numeric in order to perform a logistic fit
-df$candidate[df$candidate == "Trump"] <- 0
-df$candidate[df$candidate == "Clinton"] <- 1
+df$candidate[df$candidate == "Trump"] <- 1
+df$candidate[df$candidate == "Clinton"] <- 0
 df$candidate = as.numeric(df$candidate)
 
-#we first created a glm.fit using total_pupulation, votes, bachelors, and unemployment to predict candidate
+#we first created a glm.fit using total_population, votes, bachelors, and unemployment to predict candidate
 glm.fit <- glm(candidate~total_population+votes+bachelors+unemployment,data=df,family=binomial)
 summary(glm.fit)
 glm.probs = predict(glm.fit,type="response")
@@ -190,19 +232,6 @@ curve(predict(g,data.frame(graduates_degree=x),type="resp"),add=TRUE)
 points(graduates_degree,fitted(g),pch=20)
 ```
 
-## **Linear Discriminant Analysis**
-Now, we want to predict the candidate using LDA. In this model, we create a sample for our training set.
-
-```{r}
-train2 <- sample(1:50, 25)
-candidates2=lda(candidate~graduates_degree+asian_american_pop+bachelors+pct_dem,data=df,prior=c(1,1)/2,subset=train2)
-candidates2
-renderPlot({plot(candidates2)})
-lda.pred2=predict(candidates2, df[-train2, ])
-dflda2 = data.frame(lda.pred2)
-table(lda.pred2$class,df[-train2, ]$candidate)
-mean(lda.pred2$class==df[-train2, ]$candidate)
-```
 ## **Quadratic Discriminant Analysis**
 We want to add a little more flexibility to our covariance matrix by extending our model to QDA:
 
@@ -216,28 +245,11 @@ table(qda.class$class,df.33$candidate)
 mean(qda.class$class==df.33$candidate)
 ```
 
-**Interactive Histogram and Boxplot**
-```{r}
-sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
+## **Interesting Findings**
+Our insights can be found here: https://data.world/juandi/f-17-edaproject-3/insights
 
+**LDA Interesting Findings**
+In the beginning, we played around with the data and one of the first lda models we ran was with two predictors:bachelors and unemployment. We expected these two predictors to have a strong influence in predicting either Trump or Clinton because we believed people with bachelors would be more inclined to vote for Clinton and that the unemployed would be dissatisfied with the current political status(at the time). The model mean accuracy rate came out to be nearly 80% which confirmed our beliefs. But when we ran each predictor alone through the LDA model, the model mean accuracy rate came out to be 0.48 which is fairly weak. This came as a surprise and we realized that the bachelors variable was the actual factor that led to the high model mean accuracy rate.
 
-renderPlot({
-  x <- dflda2$LD1
-  bins <- seq(min(x), max(x), length.out = input$bins + 1)
-  ggplot(dflda2) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+The other interesting finding for LDA was for the predictor agri_occup. We believed that agri_occup would strongly predict the right candidate because there was an emphasis during the election that people in the agricultural business were fed up with the government and wanted a change. Surprisingly, the confusion matrix predicted Trump 21 times and out of those 21, 17 actually went to Clinton. We did not expect this and the model mean accuracy rate came out to be around 38%.
 
-renderPlot(ggplot(dflda2) + geom_boxplot(mapping = aes(x=class, y=LD1), color = "blue"))
-```
-
-**Using Predictors from KNN Best Subset Regression**
-```{r}
-candidates3=lda(candidate~pct_rep+less_than_high_school+asian_american_pop+unemployment,data=df,prior=c(1,1)/2,subset=train2)
-candidates3
-lda.pred3=predict(candidates3, df[-train2, ])
-dflda3 = data.frame(lda.pred3)
-table(lda.pred3$class,df[-train2, ]$candidate)
-mean(lda.pred3$class==df[-train2, ]$candidate)
-```
-
-**Conclusion**
-First we ran every single predictor alone through LDA, and then picked the predictors that we believed to be the best at predicting candidate. From there, we ran the LDA model for the four predictors that we picked. Next we wanted to compare the results of our model to the predictors from the best subset regression that are in the KNN analysis. After running those four predictors through the LDA model, we came to the conclusion that the predictors we picked are slightly better at predicting the candidate because of the higher mean accuracy rate from our model. All in all, our LDA model strongly predicts the right candidate.
