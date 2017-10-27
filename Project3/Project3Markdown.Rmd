@@ -56,8 +56,41 @@ library(class)
 library(glmnet)
 library(leaps)
 ```
+## **Simple and Multiple Linear Regressions
 
+We started our analysis by choosing one or more variables to plot vs. candidates and adding trendlines to those plots. We first focused on how one's occupation might affect their voting preference.
 
+```{r}
+#Setting categorical variables to numeric in order to graph output
+df$candidate[df$candidate == "Trump"] <- 0
+df$candidate[df$candidate == "Clinton"] <- 1
+df$candidate = as.numeric(df$candidate)
+
+plot(formula = candidate~management_occup, data=df)
+abline(lm(formula=candidate~management_occup, data=df),col="red",lwd=1.5)
+fitOccup = lm(forumla=candidate~management_occup, data=df)
+fitOccup
+summary(fitOccup)
+```
+Since the dependent variable of our data is binary (0 for Trump, 1 for Clinton), laying a linear regression line on the data doesn't highlight valuable correlation. We graphed the residuals against the fitted data to resolve this issue.
+```{r}
+#Residuals Plot
+fitOccup2 = lm(management_occup~agri_occup+candidate,data=df)
+fitOccup2
+points(management_occup,fitted(fitOccup2),col="blue",pch=20)
+summary(fitOccup2)
+plot(fitOccup2)
+```
+Because our R-squared value was still low, we decided to factor in other occupations in addition to management.
+```{r}
+#Non-linear Plot
+fitOccup3 = lm(management_occup~agri_occup*candidate,data=df)
+fitOccup3
+plot(fitOccup3)
+points(management_occup,fitted(fitOccup3),col="blue",pch=20)
+summary(fitOccup3)
+plot(fitOccup3)
+```
 ## **K-Nearest Neighbors**
 
 One of the methods used to conduct the analysis is K-Nearest Neighbors. Below shows the code and results for the analysis on this method.
@@ -111,6 +144,18 @@ lda.pred2=predict(candidates2, df[-train2, ])
 dflda2 = data.frame(lda.pred2)
 table(lda.pred2$class,df[-train2, ]$candidate)
 mean(lda.pred2$class==df[-train2, ]$candidate)
+```
+## **Quadratic Discriminant Analysis**
+We want to add a little more flexibility to our covariance matrix by extending our model to QDA:
+
+```{r}
+qda.fit = qda(candidate~management_occup+service_occup+sales_occup+agri_occup,data=df)
+qda.fit
+
+df.33 = subset(df,management_occup>=33)
+qda.class = predict(qda.fit, df.33)
+table(qda.class$class,df.33$candidate)
+mean(qda.class$class==df.33$candidate)
 ```
 
 **Interactive Histogram and Boxplot**
