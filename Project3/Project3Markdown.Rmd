@@ -131,6 +131,64 @@ knn.pred1 = knn(test2[train,], test2[!train,], df$candidate[train], k=1)
 table(knn.pred1,df$candidate[!train])
 mean(knn.pred1==df$candidate[!train])
 ```
+## **Logistic Regression Analysis**
+Here, we used logistic regression to predict the candidate by experimenting with several variables in the dataset.
+
+```{r}
+#Exactly as we had to do for the multiple linear regression, here we setting categorical variables to a binary, numeric in order to perform a logistic fit
+df$candidate[df$candidate == "Trump"] <- 0
+df$candidate[df$candidate == "Clinton"] <- 1
+df$candidate = as.numeric(df$candidate)
+
+#we first created a glm.fit using total_pupulation, votes, bachelors, and unemployment to predict candidate
+glm.fit <- glm(candidate~total_population+votes+bachelors+unemployment,data=df,family=binomial)
+summary(glm.fit)
+glm.probs = predict(glm.fit,type="response")
+glm.probs[1:5]
+glm.pred=ifelse(glm.probs>0.5,1,0) #if it's >0.5, we call it clinton, otherwise trump
+attach(df) #allows us to use variables by name
+table(glm.pred,candidate) #allows us to compare our predictions to the actual data
+mean(glm.pred==candidate) #classification performance: gives us proportion
+
+#creating the logistic regression plot and curve
+plot(bachelors,candidate,xlab="Bachelors",ylab="Candidate")
+g=glm(candidate~bachelors,data=df,family=binomial)
+curve(predict(g,data.frame(bachelors=x),type="resp"),add=TRUE)
+points(bachelors,fitted(g),pch=20)
+```
+Then we experimented with more variables and different combinations of variables to see if we could find better predictors. In this case, we tested just the variable less_than_high_school.
+```{r}
+glm.fit2 <- glm(candidate~less_than_high_school, data=df,family=binomial)
+summary(glm.fit2)
+glm.probs2 = predict(glm.fit2,type="response")
+glm.probs2[1:5]
+glm.pred2=ifelse(glm.probs2>0.5,1,0) #if it's >0.5, we call it clinton, otherwise trump
+attach(df) #allows us to use variables by name
+table(glm.pred2,candidate) #allows us to compare our predictions to the actual data
+mean(glm.pred2==candidate) #classification performance: gives us proportion
+
+#creating the logistic regression plot and curve
+plot(less_than_high_school,candidate,xlab="Less Than High School",ylab="Candidate")
+g=glm(candidate~less_than_high_school,data=df,family=binomial)
+curve(predict(g,data.frame(less_than_high_school=x),type="resp"),add=TRUE)
+points(less_than_high_school,fitted(g),pch=20)
+```
+And finally, we identified the greatest predictor of candidate, the bachelors_degree, evidenced by the highest mean value.
+```{r}
+glm.fit3 <- glm(candidate~graduates_degree+less_than_high_school, data=df,family=binomial)
+summary(glm.fit3)
+glm.probs3 = predict(glm.fit3,type="response")
+glm.probs3[1:5]
+
+glm.pred3=ifelse(glm.probs3>0.5,1,0) #if it's >0.5, we call it clinton, otherwise trump
+attach(df) #allows us to use variables by name
+table(glm.pred3,candidate) #allows us to compare our predictions to the actual data
+mean(glm.pred3==candidate) #classification performance: gives us proportion
+plot(graduates_degree,candidate,xlab="Graduates Degree",ylab="Candidate")
+g=glm(candidate~graduates_degree,data=df,family=binomial)
+curve(predict(g,data.frame(graduates_degree=x),type="resp"),add=TRUE)
+points(graduates_degree,fitted(g),pch=20)
+```
 
 ## **Linear Discriminant Analysis**
 Now, we want to predict the candidate using LDA. In this model, we create a sample for our training set.
