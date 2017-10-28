@@ -82,6 +82,10 @@ fitOccup2
 points(management_occup,fitted(fitOccup2),col="blue",pch=20)
 summary(fitOccup2)
 plot(fitOccup2)
+plot.new
+plot.new
+plot.new
+plot.new
 ```
 Because our R-squared value was still low, we decided to factor in other occupations in addition to management.
 ```{r}
@@ -253,3 +257,9 @@ In the beginning, we played around with the data and one of the first lda models
 
 The other interesting finding for LDA was for the predictor agri_occup. We believed that agri_occup would strongly predict the right candidate because there was an emphasis during the election that people in the agricultural business were fed up with the government and wanted a change. Surprisingly, the confusion matrix predicted Trump 21 times and out of those 21, 17 actually went to Clinton. We did not expect this and the model mean accuracy rate came out to be around 38%.
 
+**Logistic Regression Interesting Findings**
+Our initial linear regression analysis used the variables of bachelors degree, total population, number of votes, and unemployment to try to to predict the outcome of the election. We were surprised to find that out of these, only the presence of a bachelors degree was a significant enough variable to have a strong measure of prediction in the matter. Specifically, I expected unemployment to have a strong correlation, but it did not. After performing the glm.fit and glm.pred, we found quite a high mean in carrying out this prediction of .88, or 88%. This makes linear regression quite a useful tool in making these sorts of predictions for which candidate wins based on this dataset.
+
+In testing other variables to use for logistic regression, we found that the less_than_high_school variable yielded significant correlation to candidate, as shown by probability value. This was not surprising because it makes sense that education level would have a strong connection/correlation to political preference. What was surprising, however, was that the mean value was significantly lower for less_than_high_school than the the mean value for the bachelors variable analyzed in my previous insight (0.72 versus 0.88, respectively). Though surprising, this data certainly was helpful in knowing which variables were most important to consider for further analysis.
+
+After testing every single variable in the dataset, we determined graduates_degree to be the single most correlated variable for a logistic regression analysis of the electiondata dataset. This makes sense because a graduates degree entails having far above the average amount of education of an average American, so we'd expect a strong correlation. Compared to the mean value with less_than_high_school (0.72) and with bachelors (0.88), graduates_degree blows them out of the water with a mean value of 0.92.
