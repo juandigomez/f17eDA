@@ -7,7 +7,7 @@ output:
   html_notebook:
     code_folding: hide
     toc: yes
-    toc_depth: 8
+    toc_depth: 6
     toc_float: yes
 runtime: shiny
 ---
@@ -68,9 +68,9 @@ df$candidate[df$candidate == "Trump"] <- 1
 df$candidate[df$candidate == "Clinton"] <- 0
 df$candidate = as.numeric(df$candidate)
 
-plot(formula = candidate~management_occup, data=df)
+renderPlot({plot(formula = candidate~management_occup, data=df)})
 abline(lm(formula=candidate~management_occup, data=df),col="red",lwd=1.5)
-fitOccup = lm(forumla=candidate~management_occup, data=df)
+fitOccup = lm(candidate~management_occup, data=df)
 fitOccup
 summary(fitOccup)
 ```
@@ -81,7 +81,7 @@ fitOccup2 = lm(management_occup~agri_occup+candidate,data=df)
 fitOccup2
 points(management_occup,fitted(fitOccup2),col="blue",pch=20)
 summary(fitOccup2)
-plot(fitOccup2)
+renderPlot({plot(fitOccup2)})
 plot.new
 plot.new
 plot.new
@@ -107,7 +107,6 @@ First of all, we must set the training data to conduct KNN. We use the votes var
 # Setting training data
 train = df$votes > 1000000
 ```
-
 
 Our first test using KNN is using the white_pop and unemployment variable to predict a winner. As seen in the election, the white and unemployed voters were one of the demographics that largely voted for Trump.
 ```{r}
