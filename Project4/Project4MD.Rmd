@@ -27,6 +27,12 @@ require(lubridate)
 require(rmarkdown)
 require(tidyr)
 require(glmnet)
+library(ggplot2)
+library(class)
+library(glmnet)
+library(leaps)
+require(tree)
+require(randomForest)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -42,19 +48,74 @@ In order to analyze the methods discussed in class for model comparison, we deci
 ## **Requiring data and initializing session**
 We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at https://data.world/juandi/f-17-eda-project-4.
 ```{r}
+require(data.world)
+
 project <- "https://data.world/juandi/f-17-eda-project-4"
+data.world::set_config(cfg_env("DW_API"))
 electiondf <- data.world::query(
   data.world::qry_sql("SELECT * FROM electiondata"),
   dataset = project
 )
+
 attach(electiondf)
-library(ggplot2)
-library(class)
-library(glmnet)
-library(leaps)
 ```
 
 ## **Decision Trees**
+Decision trees are forms of making tree based prediction. For us, will use decision trees to determine what factors are best for predicting the candidate in the 2016 election data.Before using the decision trees, we must first transform the data to get an accurate output.
+
+```{r}
+# Setting up the data
+df = electiondf
+result = df$candidate
+
+df$candidate[df$candidate == "Trump"] <- 1
+df$candidate[df$candidate == "Clinton"] <- 0
+
+drops <- c("state")
+df <- df[ , !(names(df) %in% drops)]
+
+df$candidate = as.numeric(df$candidate)
+df$candidate = as.numeric(df$votes)
+
+df=data.frame(df, result)
+```
+Once the data has been transform, we are able to use the tree library in order to produce a decision tree. As one can see, using this model graduate degrees and asian_american_pop were the biggest determine of the winner. Also notice that regardless of the asian_american_pop, if you graduate_degrees were below a certain threshhold, the model predicted Trump. This reflects that actual results of the election as it was the more educated population that voted for Clinton and people with either high school diplomas or no formal education who voted for Trump.
+
+```{r}
+tree.candidate=tree(result~.,df)
+summary(tree.candidate)
+renderPlot(plot(tree.candidate))
+renderPlot(text(tree.candidate,pretty=0))
+```
+
+**Random Forest**
+Using similar techniques, we can create random forest models to predict the data as well. These models create many bushy trees and averages them to reduce the variance. Using the randomforest library, we can create these models and interpret the results. To create these models, we must create a set of training data first. Consdiering we have 50 rows, we have set our training data to 20 items.
+
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),20)
+rf.election=randomForest(result~.-candidate,data=df,subset=train)
+rf.election
+```
+The results using this training data was about 20% as seen above. The model had more misclassification when classifying Clinton than Trump. Overall not terrible results, but could definitely be imporved.
+
+```{r}
+set.seed(101)
+train1=sample(1:nrow(df),30)
+
+rf.election1=randomForest(result~.-candidate,data=df,subset=train1)
+rf.election1
+```
+To try to improve the model, we decided to increase the size of the training data from 20 to 30. As one can see in the results above, this did improve the accuracy of the model by about 7%.
+
+```{r}
+set.seed(101)
+train2=sample(1:nrow(df),45)
+
+rf.election2=randomForest(result~.-candidate,data=df,subset=train2)
+rf.election2
+```
+The more data we can use in our training data, the more accurate our model will be. We increased the training data size again from 30 to 45 and got an estimated error of 8% which is a much better result than the training data we originally used.
 
 ## **Support Vector Machines**
 

@@ -44,7 +44,7 @@ In order to analyze the methods discussed in class for model comparison, we deci
 We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at https://data.world/juandi/f-17-edaproject-3.
 ```{r}
 require(data.world)
-
+data.world::set_config(cfg_env("DW_API"))
 project <- "https://data.world/juandi/f-17-edaproject-3"
 
 df <- data.world::query(
