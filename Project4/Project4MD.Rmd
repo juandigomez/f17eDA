@@ -180,7 +180,7 @@ best_mod_RMSE <- sqrt(mean(error_best_mod^2)) # 1.290738
 plot(svm_tune)
 
 plot(train,pch=16)
-points(train$x, best_mod_pred, col = "blue", pch=4)
+points(train$grad_deg, best_mod_pred, col = "blue", pch=4)
 ```
 ## **Unsupervised Learning**
 Lastly, we will try to further our knowledge of our data through unsupervised learning and to find interesting things. In this section, we're going to analyze our data through principal components analysis and clustering.
@@ -255,6 +255,9 @@ The effectiveness of decision trees were a little bit tougher to compare using t
 The decision tree analysis including random forest and boosting consitently place graduate_degree and asian_american_pop as major influencers in the accuracy of the model. While these were all of the major predictors found in project 3, they were definetly some of the more significant predictors that some of the models found in project 3 that popped up in the K nearest neighbors analysis and the LDA analysis.
 
 **Support Vector Machines Interesting Findings**
+Using support vector machines for Project 4 really showed how the trends in the predictors can be subtle and not easily caught by our past models. In project 3, we used discriminant analysis to find trends in the data. With QDA, looking at different occupations from state-to-state, I plotted a trend using discrminant analysis in how well occupation worked as a predictor. Although I wasn't able to use the same variables for non-linear SVM as I'd used in Project 3, seeing how tight of a trend SVM produced spoke for itself.
+
+Since our model iteratively calculated a difference between the prediction and actual data, tightness of the resulting blue predicted coordinate points allow for us to showcase a more accurate depiction of what the data is telling us. The 10-fold validation step after we ran our initial training and fit provides the analyst the ability to tune the parameters behind the svm as tightly or as loosely as they want. We learned in class that having the training data too close to the test data can cause for unwanted bias and less accuracy in our model. But the tuning parameter of SVM allows us to tweak the model as much or as little as we need to.  
 
 **Unsupervised Learning Interesting Findings**
 In the beginning, we played around with the data to find interesting things which is what unsupervised learning is about. One interesting thing we found was through K-Means clustering. A lot of statistics stated that black voter turnout fell drastically in 2016 from 66.6% in 2012 to 59.6% in 2016. This graph confirms that drastic decrease. We can see that five states considered as mid to high in black population went red and those states could have been blue in 2012.
