@@ -165,7 +165,7 @@ The black dots represent our data points of percentages of individuals with grad
 ```{r}
 error <- model$residuals
 lm_error <- sqrt(mean(error^2)) # 3.832974
-error_2 <- train$y - pred
+error_2 <- train$percent_dem - pred
 svm_error <- sqrt(mean(error_2^2)) # 2.696281
 svm_tune <- tune(svm, percent_dem ~ grad_deg, data = train,
                  ranges = list(epsilon = seq(0,1,0.01), cost = 2^(2:9))
