@@ -1,0 +1,136 @@
+---
+title: "Project 4: Prediction of 2016 Election"
+author: "Group 8: Jackie Lee, Juan Gomez, Patrick Lyons, Ross Miglin"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+require(data.world)
+require(MASS)
+require(ISLR)
+require(dplyr)
+require(ggplot2)
+require(hexbin)
+require(jsonlite)
+require(shiny)
+require(rsconnect)
+require(knitr)
+require(lubridate)
+require(rmarkdown)
+require(tidyr)
+require(glmnet)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **R Session Info**
+```{r}
+sessionInfo()
+```
+
+## **Introduction**
+In order to analyze the methods discussed in class for model comparison, we decided to use data on the 2016 Presidential Election in order to make predictions of which candidate one based on different races and different occupations. This is especially interesting because we now know what factors where key in the success Trump. So we can make models and assumptions based on that information to see if these factors are as significant in our models as the were in real life.
+
+
+## **Requiring data and initializing session**
+We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at https://data.world/juandi/f-17-eda-project-4.
+```{r}
+project <- "https://data.world/juandi/f-17-eda-project-4"
+electiondf <- data.world::query(
+  data.world::qry_sql("SELECT * FROM electiondata"),
+  dataset = project
+)
+attach(electiondf)
+library(ggplot2)
+library(class)
+library(glmnet)
+library(leaps)
+```
+
+## **Decision Trees**
+
+## **Support Vector Machines**
+
+## **Unsupervised Learning**
+Lastly, we will try to further our knowledge of our data through unsupervised learning and to find interesting things. In this section, we're going to analyze our data through principal components analysis and clustering.
+
+**Principal Components Analysis**
+```{r}
+electmatrix = matrix(
+  c(white_pop,latino_pop,high_school,bachelors), 50, 4)
+
+dimnames(electmatrix) = list(
+  c("Alabama","Arizona","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Arkansas","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","California","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","Colorado","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Connecticut","Delaware","District of Columbia","Florida","Georgia"),
+  c("white_pop","latino_pop","high_school","bachelors")
+)
+
+apply(electmatrix,2,mean)
+apply(electmatrix,2, var)
+pca.out=prcomp(electmatrix, scale=TRUE)
+pca.out
+names(pca.out)
+renderPlot(biplot(pca.out, scale=0))
+```
+After running all of the variables, the four variables with the highest variance are: white_pop, latino_pop, high_school, and bachelors. This visual describes the clusters of states by population of white, population of latinos, high_school, and bachelors. We can observe that the arrows for bachelors and high_school are generally pointing towards states in the Northeast where the level of education is considered to be higher compared to other parts of the nation.
+
+**K-Means Clustering**
+```{r}
+electmatrix2 = matrix(
+  c(bachelors,pct_dem), 50, 2)
+
+dimnames(electmatrix2) = list(
+  c("Alabama","Arizona","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Arkansas","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","California","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","Colorado","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming","Connecticut","Delaware","District of Columbia","Florida","Georgia"),
+  c("bachelors","pct_dem")
+)
+
+renderPlot({
+  ggplot(electiondf,(aes(x=pct_dem, y=bachelors, colour = as.factor(candidate)))) + geom_point()
+  })
+
+set.seed(51)
+km.out=kmeans(electmatrix2,3,nstart=15)
+km.out
+electiondf <- data.frame(electiondf, km.out$cluster)
+electiondf1 <- data.frame(km.out$centers, km.out$size)
+renderPlot({ggplot(electiondf) + geom_point(mapping = aes(x=pct_dem, y=bachelors, colour = as.factor(km.out.cluster))) + geom_point(data=electiondf1, mapping=aes(pct_dem, bachelors, size=km.out.size))})
+```
+Looking at the basic ggpoint plot, we can see that generally, the states that voted for Clinton are higher in both pct_dem and bachelors which is obvious and expected respectively. Since we know higher in pct_dem and bachelors will most likely be a blue state and the opposite being likely for a red state, we want to analyze the cluster in the middle. Interestingly, some of the states in the middle cluster (Minnesota, Wisconsin, Virginia, and Pennsylvania) are swing states. Overall, the results are as expected and confirms that the predictors chosen by the LDA analysis are good. States with higher level of education (bachelor's) mostly voted for Clinton and some of those that voted for Trump are considered swing states.
+
+**Hierarchical Clustering**
+```{r}
+hc.complete=hclust(dist(electmatrix2),method="complete")
+renderPlot(plot(hc.complete))
+hc.single=hclust(dist(electmatrix2),method="single")
+renderPlot(plot(hc.single))
+hc.average=hclust(dist(electmatrix2),method="average")
+renderPlot(plot(hc.average))
+
+hc.cut=cutree(hc.complete,2)
+table(hc.cut,candidate)
+hc.cut
+table(hc.cut,km.out$cluster)
+```
+Using the same two predictors from K-Means clustering, bachelors and pct_dem, we will now look at hierarchical clustering. Hierarchical clustering dendrogram shows which states are close to each other in terms of bachelors and pct_dem. We can see that a lot of states in the Northeast are clumped together to no surprise. But surprisingly, California and New York are on the other side of the dendrogram. This could be due to a small spread between the observations.
+
+**Comparison to findings in Project 3**
+From Project 3, we saw that the LDA model found graduates_degree, asian_american_pop, bachelors, and pct_dem to be strong predictors. From the K-Means clustering, the clusters confirm the findings in the LDA model. States clustered together with higher level of education (bachelor's) mostly voted for Clinton and some of those that voted for Trump are considered swing states.
+
+## **Interesting Findings**
+Our insights can be found here: https://data.world/juandi/f-17-eda-project-4/insights
+
+**Decision Trees Interesting Findings**
+
+**Support Vector Machines Interesting Findings**
+
+**Unsupervised Learning Interesting Findings**
+In the beginning, we played around with the data to find interesting things which is what unsupervised learning is about. One interesting thing we found was through K-Means clustering. A lot of statistics stated that black voter turnout fell drastically in 2016 from 66.6% in 2012 to 59.6% in 2016. This graph confirms that drastic decrease. We can see that five states considered as mid to high in black population went red and those states could have been blue in 2012.
+
+In order to compare our results to the findings in Project 3 (specifically from LDA Analysis), we ran predictors that were used in the last project and played around using both clustering and pca. One interesting finding was from the hierarchical clustering. We ran bachelors and pct_dem as our variables and we saw that a lot of states in the Northeast were clumped together to no surprised. But surprisingly, California and New York were on the other side of the dendrogram. This could be due to a small spread between the observations.
+
