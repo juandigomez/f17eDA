@@ -150,8 +150,38 @@ We can now plot these predictors to see exactly what was the result with these p
 
 ## **Support Vector Machines**
 Support vector machines are a form of fitting a prediction model to the data provided using tuning parameters and methods of cutting up the data in higher order planes. Each plane that SVM technique uses to cut up data divides the data into segments for which there are distinct charcteristics.
-Code
+```{r}
+grad_deg=c(graduates_degree)
+percent_dem=c(pct_dem)
+train=data.frame(grad_deg,percent_dem)
+plot(train,pch=16)
+model <- lm(percent_dem ~ grad_deg, train)
+abline(model)
+model_svm <- svm(percent_dem~grad_deg,train)
+pred <- predict(model_svm,train)
+points(train$grad_deg, pred, col="blue", pch=4)
+```
 The black dots represent our data points of percentages of individuals with graduate degrees in each state and the corresponding percentage of democrats in those same states. The black line shows a simple linear regression on the data highlighting a general positive trend. The blue cross marks show us how the model trained on the data and created its own prediction set. We can see these blue marks have a much tighter trend than the black ones.
+```{r}
+error <- model$residuals
+lm_error <- sqrt(mean(error^2)) # 3.832974
+error_2 <- train$y - pred
+svm_error <- sqrt(mean(error_2^2)) # 2.696281
+svm_tune <- tune(svm, percent_dem ~ grad_deg, data = train,
+                 ranges = list(epsilon = seq(0,1,0.01), cost = 2^(2:9))
+)
+print(svm_tune)
+best_mod <- svm_tune$best.model
+best_mod_pred <- predict(best_mod, train) 
+
+error_best_mod <- train$percent_dem - best_mod_pred 
+best_mod_RMSE <- sqrt(mean(error_best_mod^2)) # 1.290738 
+
+plot(svm_tune)
+
+plot(train,pch=16)
+points(train$x, best_mod_pred, col = "blue", pch=4)
+```
 ## **Unsupervised Learning**
 Lastly, we will try to further our knowledge of our data through unsupervised learning and to find interesting things. In this section, we're going to analyze our data through principal components analysis and clustering.
 
