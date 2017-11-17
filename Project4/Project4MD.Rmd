@@ -33,6 +33,7 @@ library(glmnet)
 library(leaps)
 require(tree)
 require(randomForest)
+require(gbm)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -85,7 +86,6 @@ Once the data has been transform, we are able to use the tree library in order t
 tree.candidate=tree(result~.,df)
 summary(tree.candidate)
 renderPlot(plot(tree.candidate))
-renderPlot(text(tree.candidate,pretty=0))
 ```
 
 **Random Forest**
@@ -116,6 +116,36 @@ rf.election2=randomForest(result~.-candidate,data=df,subset=train2)
 rf.election2
 ```
 The more data we can use in our training data, the more accurate our model will be. We increased the training data size again from 30 to 45 and got an estimated error of 8% which is a much better result than the training data we originally used.
+
+**Boosting**
+Boosting is another tree based technique that creates many small trees in order to conduct its analysis. For our project, we changed the different parametes one can include in the boosting function to see what happens. We will use the training data that gave us the best results.
+
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),45)
+
+boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=1000,shrinkage=0.001,interaction.depth=2)
+renderPlot(summary(boost.election))
+```
+For this first model, we saw graduate_degree and asian_american_pop be the two most influential predictors. However, we will continue to change the amount of trees, the shrinkage and the interaction depth to see if our results change.
+
+```{r}
+boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=100,shrinkage=1,interaction.depth=3)
+renderPlot(summary(boost.election))
+```
+We decreased the amount of trees and increased the shortage and depth of the the model. This time graduate_degree still was the most influential predictor however black_pop was the second most closely followed by white_pop. This refelct the actual election data a little more closely as race was a major factor in terms of how people voted. Most of the white vote ended up going to Trump and most of the minority vote went to Clinton.
+
+```{r}
+boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=10000,shrinkage=0.01,interaction.depth=4)
+renderPlot(summary(boost.election))
+```
+Finally we increased the amount of trees and the depth but decreased the shrinkage. This ended up giving similar results to the first boosting model with graduate_degree and asian_american_pop as the top two most influential predictors.
+
+```{r}
+renderPlot(plot(boost.election,i="graduates_degree"))
+renderPlot(plot(boost.election,i="asian_american_pop"))
+```
+We can now plot these predictors to see exactly what was the result with these predictors. As the percent graduate degrees increase, most people voted for Clinton (represented by 0). Same with the asian american population. As percentage increased, the Clinton was predicted. So because of the dramatic behavior of these two predictors we can see why they were significant in the models.
 
 ## **Support Vector Machines**
 
@@ -187,6 +217,9 @@ From Project 3, we saw that the LDA model found graduates_degree, asian_american
 Our insights can be found here: https://data.world/juandi/f-17-eda-project-4/insights
 
 **Decision Trees Interesting Findings**
+The effectiveness of decision trees were a little bit tougher to compare using this data set because of how few rows it contained. However, in order to compare the results to our previous project, the same data set had to be used. Additionally, the results are consistent throughout the the decision tree analysis and reflects some of the results found in the previous project.
+
+The decision tree analysis including random forest and boosting consitently place graduate_degree and asian_american_pop as major influencers in the accuracy of the model. While these were all of the major predictors found in project 3, they were definetly some of the more significant predictors that some of the models found in project 3 that popped up in the K nearest neighbors analysis and the LDA analysis.
 
 **Support Vector Machines Interesting Findings**
 

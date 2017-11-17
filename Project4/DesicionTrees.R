@@ -35,20 +35,33 @@ text(tree.candidate,pretty=0)
 
 # Random Forest
 set.seed(101)
+train=sample(1:nrow(df),20)
+
+rf.boston=randomForest(result~.-candidate,data=df,subset=train)
+rf.boston
+
+set.seed(101)
+train=sample(1:nrow(df),30)
+
+rf.boston=randomForest(result~.-candidate,data=df,subset=train)
+rf.boston
+
+set.seed(101)
 train=sample(1:nrow(df),45)
 
 rf.boston=randomForest(result~.-candidate,data=df,subset=train)
 rf.boston
 
 #Boosting
+boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=1000,shrinkage=0.001,interaction.depth=2)
+summary(boost.election)
+
+boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=100,shrinkage=1,interaction.depth=3)
+summary(boost.election)
+
 boost.election=gbm(result~.,data=df[train,],distribution="gaussian",n.trees=10000,shrinkage=0.01,interaction.depth=4)
 summary(boost.election)
-plot(boost.election,i="unemployment")
-plot(boost.election,i="less_than_high_school")
 
-n.trees=seq(from=100,to=10000,by=100)
-predmat=predict(boost.boston,newdata=Boston[-train,],n.trees=n.trees)
-dim(predmat)
-berr=with(Boston[-train,],apply( (predmat-medv)^2,2,mean))
-plot(n.trees,berr,pch=19,ylab="Mean Squared Error", xlab="# Trees",main="Boosting Test Error")
-abline(h=min(test.err),col="red")
+plot(boost.election,i="graduates_degree")
+plot(boost.election,i="asian_american_pop")
+
