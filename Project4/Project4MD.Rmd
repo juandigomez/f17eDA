@@ -149,7 +149,11 @@ renderPlot(plot(boost.election,i="asian_american_pop"))
 ```
 We can now plot these predictors to see exactly what was the result with these predictors. As the percent graduate degrees increase, most people voted for Clinton (represented by 0). Same with the asian american population. As percentage increased, the Clinton was predicted. So because of the dramatic behavior of these two predictors we can see why they were significant in the models.
 
+**Comparison to findings in Project 3**
+The results from the decision trees confirm some of the findings from project 3. WHile they weren't exactly the same, it did confirm that some of the major parameters that influence model prediction are graduate_degrees and asian_american_pop. Additionally, it reinforced the idea that we established project 3 that certain parameters in the model were major influencers in the real life election, in this specific case, the level of education.
+
 ## **Support Vector Machines**
+**Linear**
 Support vector machines are a form of fitting a prediction model to the data provided using tuning parameters and methods of cutting up the data in higher order planes. Each plane that SVM technique uses to cut up data divides the data into segments for which there are distinct charcteristics.
 ```{r}
 grad_deg=c(graduates_degree)
@@ -178,11 +182,11 @@ best_mod_RMSE <- sqrt(mean(error_best_mod^2)) # 1.290738
 
 renderPlot(plot(svm_tune)+plot(train,pch=16)+points(train$grad_deg, best_mod_pred, col = "blue", pch=4))
 ```
-## **Support Vector Machines Continued (Nonlinear)**
+**Nonlinear**
 The following support vector machine is a nonlinear model used to predict candidate with the bachelors variable. The mean value calculated is the misclassification rate (8%), which demonstrates that this model is equal to the logisitc regression model from Project 3 in terms of its accuracy in predicting candidate using bachelors.
 
 ```{r}
-plot(bachelors,col=candidate+3)
+renderPlot(plot(bachelors,col=candidate+3))
 y<-candidate
 x<-bachelors
 
@@ -195,11 +199,6 @@ Radialsvm
 table(predicted=Radialsvm$fitted,actual=data$y)
 #misclassification Rate
 mean(Radialsvm$fitted!=data$y)*100 #8% misclassification rate
-
-xgrid=expand.grid(X1=px1,X2=px2) #generating grid points
-ygrid=predict(Radialsvm,newdata = xgrid)
-plot(xgrid,col=as.numeric(ygrid),pch=20,cex=0.3)
-points(x,col=y+1,pch=19)
 ```
 ## **Unsupervised Learning**
 Lastly, we will try to further our knowledge of our data through unsupervised learning and to find interesting things. In this section, we're going to analyze our data through principal components analysis and clustering.
@@ -273,12 +272,12 @@ The effectiveness of decision trees were a little bit tougher to compare using t
 
 The decision tree analysis including random forest and boosting consitently place graduate_degree and asian_american_pop as major influencers in the accuracy of the model. While these were all of the major predictors found in project 3, they were definetly some of the more significant predictors that some of the models found in project 3 that popped up in the K nearest neighbors analysis and the LDA analysis.
 
-**Support Vector Machines Interesting Findings**
+**Support Vector Machines (Linear) Interesting Findings**
 Using support vector machines for Project 4 really showed how the trends in the predictors can be subtle and not easily caught by our past models. In project 3, we used discriminant analysis to find trends in the data. With QDA, looking at different occupations from state-to-state, I plotted a trend using discrminant analysis in how well occupation worked as a predictor. Although I wasn't able to use the same variables for non-linear SVM as I'd used in Project 3, seeing how tight of a trend SVM produced spoke for itself.
 
 Since our model iteratively calculated a difference between the prediction and actual data, tightness of the resulting blue predicted coordinate points allow for us to showcase a more accurate depiction of what the data is telling us. The 10-fold validation step after we ran our initial training and fit provides the analyst the ability to tune the parameters behind the svm as tightly or as loosely as they want. We learned in class that having the training data too close to the test data can cause for unwanted bias and less accuracy in our model. But the tuning parameter of SVM allows us to tweak the model as much or as little as we need to.  
 
-**Support Vector Machines Interesting Findings Continued (Nonlinear)**
+**Support Vector Machines (Nonlinear) Interesting Findings**
 By far the most promising element of our findings from nonlinear SVM is that the misclassification rate is only 8%. This is equal to the misclassification rate of the logistic regression model we used in Project 3, which means we are essentially indifferent to the two in temrs of their accuracy in predicting the candidate variable using the bachelors variable. The only potential issue is that the plot we get is nearly meaningless. It's simply not very spread out because of our data being so loosely sporadic (only 0s and 1s for candidate). Or rather, this is our hypothesis as to why the data isn't very appealing when plotted. It is possible that there is some human error involved or that there's something else underneath our data leading to this issue, but overall, the plot is not very interesting or meaningful - just a couple columns of data points. But again, the misclassification error is so low that this model is surely worth using.
 
 **Unsupervised Learning Interesting Findings**
