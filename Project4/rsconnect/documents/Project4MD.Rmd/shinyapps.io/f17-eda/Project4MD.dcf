@@ -5,8 +5,8 @@ account: f17-eda
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 236537
-bundleId: 1082121
+bundleId: 1082181
 url: https://f17-eda.shinyapps.io/Project4MD/
-when: 1510964056.1114
+when: 1510966815.38967
 asMultiple: FALSE
 asStatic: FALSE

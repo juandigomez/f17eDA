@@ -77,17 +77,18 @@ drops <- c("state")
 df <- df[ , !(names(df) %in% drops)]
 
 df$candidate = as.numeric(df$candidate)
-df$candidate = as.numeric(df$votes)
 
 df=data.frame(df, result)
 ```
 Once the data has been transform, we are able to use the tree library in order to produce a decision tree. As one can see, using this model graduate degrees and asian_american_pop were the biggest determine of the winner. Also notice that regardless of the asian_american_pop, if you graduate_degrees were below a certain threshhold, the model predicted Trump. This reflects that actual results of the election as it was the more educated population that voted for Clinton and people with either high school diplomas or no formal education who voted for Trump.
 
 ```{r}
-tree.candidate=tree(result~.,df)
+tree.candidate=tree(result~.-candidate,df)
 summary(tree.candidate)
-renderPlot(plot(tree.candidate))
-#text(tree.candidate,pretty=0))
+renderPlot({
+  plot(tree.candidate)
+  text(tree.candidate,pretty=0)
+})
 ```
 
 **Random Forest**
@@ -186,7 +187,12 @@ renderPlot(plot(svm_tune)+plot(train,pch=16)+points(train$grad_deg, best_mod_pre
 The following support vector machine is a nonlinear model used to predict candidate with the bachelors variable. The mean value calculated is the misclassification rate (8%), which demonstrates that this model is equal to the logisitc regression model from Project 3 in terms of its accuracy in predicting candidate using bachelors.
 
 ```{r}
-renderPlot(plot(bachelors,col=candidate+3))
+df$candidate[df$candidate == "Trump"] <- 1
+df$candidate[df$candidate == "Clinton"] <- 0
+
+df$candidate = as.numeric(df$candidate)
+
+renderPlot(plot(bachelors,col=df$candidate+3))
 y<-candidate
 x<-bachelors
 
