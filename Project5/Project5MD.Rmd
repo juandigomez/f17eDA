@@ -1,0 +1,142 @@
+---
+title: "Project 5: Breast Cancer"
+author: "Group 8: Jackie Lee, Juan Gomez, Patrick Lyons, Ross Miglin"
+resource_files:
+- .Renviron
+output:
+  html_notebook:
+    code_folding: hide
+    toc: yes
+    toc_depth: 6
+    toc_float: yes
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+require(data.world)
+require(MASS)
+require(ISLR)
+require(dplyr)
+require(ggplot2)
+require(hexbin)
+require(jsonlite)
+require(shiny)
+require(rsconnect)
+require(knitr)
+require(lubridate)
+require(rmarkdown)
+require(tidyr)
+require(glmnet)
+library(ggplot2)
+library(class)
+library(glmnet)
+library(leaps)
+library("e1071")
+require(tree)
+require(randomForest)
+require(gbm)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## **R Session Info**
+```{r}
+sessionInfo()
+```
+
+## **Introduction**
+FOr this project, we will use all methods and algorthims that we have been investigated this past semester. From Linear regression to Linear Discriminate Analysis to Decision Trees and everything in between. With this array of methods in our tool box, we can analyze the data and find some intresting insights based on the kinds of methods we use.
+
+
+## **Requiring data and initializing session**
+We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at https://data.world/patrickyoutube/f-17-eda-project-5.
+```{r}
+require(data.world)
+
+project <- "https://data.world/patrickyoutube/f-17-eda-project-5"
+data.world::set_config(cfg_env("DW_API"))
+df <- data.world::query(
+  data.world::qry_sql("SELECT * FROM data"),
+  dataset = project
+)
+
+attach(df)
+
+
+```
+
+## **K-Nearest Neighbors**
+
+With K-Nearest Neighbors analysis or KNN, we can use mulitpliple predictors to see which one is best at predicting the results of having a cancerous tumor or not. We set and training data based on the id numbers to use in our analysis. The first KNN analysis done we used perimeter_mean and area_mean and got a results of mean of 83% which is incredibly accurate.
+```{r}
+# Establishing training data
+train = id > 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_mean)
+
+knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
+table(knn.pred,df$diagnosis[!train])
+mean(knn.pred==df$diagnosis[!train])
+```
+
+Since these two parameters gave great results, we can use variations of them to see if we can get better results. For this analysis we used perimeter_mean again but used area_se instead. We got much better results with a mean of 84%. 
+```{r}
+# Establishing training data
+train = id > 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_se)
+
+knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
+table(knn.pred,df$diagnosis[!train])
+mean(knn.pred==df$diagnosis[!train])
+```
+
+Now that we have improved our results, we can see if we can continue to use the parameters but change our K values, we could potentially get even better results. The analysis consistently determines that a k value of 3 will give the highest mean which is 86%.
+```{r}
+# Establishing training data
+train = id > 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_se)
+
+mean = 1:20
+max = 0
+
+for(k in 1:20){
+  knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k)
+  mean[k] = mean(knn.pred==df$diagnosis[!train])
+  if(mean[k] > max){
+     max = mean[k]
+     maxk = k
+  }
+}
+
+renderPlot(plot(mean))
+
+max
+maxk
+
+```
+
+## **Subset Selection**
+Using best subset selesction we can detrmine which model has the best predictors with the lowest error. With a dataset as large and complex as the one we are using, this helps us narrow down some key predictors.
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+
+#RUnning best subset regression and saving results
+regfit.full=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32))
+reg.summary=summary(regfit.full)
+
+#Plotting results
+min = which.min(reg.summary$cp)
+renderPlot(plot(reg.summary$cp,xlab="Number of Variables",ylab="Cp")
+           + points(min,reg.summary$cp[min],pch=20,col="red"))
+```
+
+From the analysis above we can see that that the model with the lowest error has 14 different predictors. Those predictors can be seen below in the summary of the coefficients of the best subset analysis for this model.
+```{r}
+#Coefficient Summary
+coef(regfit.full,min)
+```

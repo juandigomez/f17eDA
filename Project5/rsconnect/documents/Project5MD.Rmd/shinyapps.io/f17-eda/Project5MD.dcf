@@ -1,0 +1,12 @@
+name: Project5MD
+title: Project5MD
+username:
+account: f17-eda
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 240726
+bundleId: 1111661
+url: https://f17-eda.shinyapps.io/Project5MD/
+when: 1512287123.6098
+asMultiple: FALSE
+asStatic: FALSE
