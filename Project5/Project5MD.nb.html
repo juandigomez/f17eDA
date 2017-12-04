@@ -294,7 +294,7 @@ div.tocify {
 <p>We have retrieved our data and required the proper libraries in order to correctly compute our analysis. Our data can be viewed at <a href="https://data.world/patrickyoutube/f-17-eda-project-5" class="uri">https://data.world/patrickyoutube/f-17-eda-project-5</a>.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShkYXRhLndvcmxkKVxuXG5wcm9qZWN0IDwtIFwiaHR0cHM6Ly9kYXRhLndvcmxkL3BhdHJpY2t5b3V0dWJlL2YtMTctZWRhLXByb2plY3QtNVwiXG5kYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoXCJEV19BUElcIikpXG5kZiA8LSBkYXRhLndvcmxkOjpxdWVyeShcbiAgZGF0YS53b3JsZDo6cXJ5X3NxbChcIlNFTEVDVCAqIEZST00gZGF0YVwiKSxcbiAgZGF0YXNldCA9IHByb2plY3RcbilcblxuYXR0YWNoKGRmKVxuXG5kZiRkaWFnbm9zaXNbZGYkZGlhZ25vc2lzID09IFwiTVwiXSA8LSAxXG5kZiRkaWFnbm9zaXNbZGYkZGlhZ25vc2lzID09IFwiQlwiXSA8LSAwXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxucmVxdWlyZShkYXRhLndvcmxkKVxuXG5wcm9qZWN0IDwtIFwiaHR0cHM6Ly9kYXRhLndvcmxkL3BhdHJpY2t5b3V0dWJlL2YtMTctZWRhLXByb2plY3QtNVwiXG5kYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoXCJEV19BUElcIikpXG5kZiA8LSBkYXRhLndvcmxkOjpxdWVyeShcbiAgZGF0YS53b3JsZDo6cXJ5X3NxbChcIlNFTEVDVCAqIEZST00gZGF0YVwiKSxcbiAgZGF0YXNldCA9IHByb2plY3RcbilcblxuYXR0YWNoKGRmKVxuXG5cbmBgYCJ9 -->
 <pre class="r"><code>require(data.world)
 
 project &lt;- &quot;https://data.world/patrickyoutube/f-17-eda-project-5&quot;
@@ -305,17 +305,158 @@ df &lt;- data.world::query(
 )
 
 attach(df)
-
-df$diagnosis[df$diagnosis == &quot;M&quot;] &lt;- 1
-df$diagnosis[df$diagnosis == &quot;B&quot;] &lt;- 0
 </code></pre>
 <!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
+</div>
+<div id="section-k-nearest-neighbors" class="section level2">
+<h2><strong>K-Nearest Neighbors</strong></h2>
+<p>With K-Nearest Neighbors analysis or KNN, we can use mulitpliple predictors to see which one is best at predicting the results of having a cancerous tumor or not. We set and training data based on the id numbers to use in our analysis. The first KNN analysis done we used perimeter_mean and area_mean and got a results of mean of 83% which is incredibly accurate.</p>
 <!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBpZCA+IDkwMDAwMFxuXG4jIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlXG50ZXN0ID0gY2JpbmQoZGYkcGVyaW1ldGVyX21lYW4sZGYkYXJlYV9tZWFuKVxuXG5rbm4ucHJlZCA9IGtubih0ZXN0W3RyYWluLF0sIHRlc3RbIXRyYWluLF0sIGRmJGRpYWdub3Npc1t0cmFpbl0sIGs9MSlcbnRhYmxlKGtubi5wcmVkLGRmJGRpYWdub3Npc1shdHJhaW5dKVxubWVhbihrbm4ucHJlZD09ZGYkZGlhZ25vc2lzWyF0cmFpbl0pXG5gYGAifQ== -->
+<pre class="r"><code># Establishing training data
+train = id &gt; 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_mean)
+
+knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
+table(knn.pred,df$diagnosis[!train])
+mean(knn.pred==df$diagnosis[!train])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Since these two parameters gave great results, we can use variations of them to see if we can get better results. For this analysis we used perimeter_mean again but used area_se instead. We got much better results with a mean of 84%.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBpZCA+IDkwMDAwMFxuXG4jIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlXG50ZXN0ID0gY2JpbmQoZGYkcGVyaW1ldGVyX21lYW4sZGYkYXJlYV9zZSlcblxua25uLnByZWQgPSBrbm4odGVzdFt0cmFpbixdLCB0ZXN0WyF0cmFpbixdLCBkZiRkaWFnbm9zaXNbdHJhaW5dLCBrPTEpXG50YWJsZShrbm4ucHJlZCxkZiRkaWFnbm9zaXNbIXRyYWluXSlcbm1lYW4oa25uLnByZWQ9PWRmJGRpYWdub3Npc1shdHJhaW5dKVxuYGBgIn0= -->
+<pre class="r"><code># Establishing training data
+train = id &gt; 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_se)
+
+knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
+table(knn.pred,df$diagnosis[!train])
+mean(knn.pred==df$diagnosis[!train])</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now that we have improved our results, we can see if we can continue to use the parameters but change our K values, we could potentially get even better results. The analysis consistently determines that a k value of 3 will give the highest mean which is 86%.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YVxudHJhaW4gPSBpZCA+IDkwMDAwMFxuXG4jIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlXG50ZXN0ID0gY2JpbmQoZGYkcGVyaW1ldGVyX21lYW4sZGYkYXJlYV9zZSlcblxubWVhbiA9IDE6MjBcbm1heCA9IDBcblxuZm9yKGsgaW4gMToyMCl7XG4gIGtubi5wcmVkID0ga25uKHRlc3RbdHJhaW4sXSwgdGVzdFshdHJhaW4sXSwgZGYkZGlhZ25vc2lzW3RyYWluXSwgaylcbiAgbWVhbltrXSA9IG1lYW4oa25uLnByZWQ9PWRmJGRpYWdub3Npc1shdHJhaW5dKVxuICBpZihtZWFuW2tdID4gbWF4KXtcbiAgICAgbWF4ID0gbWVhbltrXVxuICAgICBtYXhrID0ga1xuICB9XG59XG5cbnJlbmRlclBsb3QocGxvdChtZWFuKSlcblxubWF4XG5tYXhrXG5cbmBgYCJ9 -->
+<pre class="r"><code># Establishing training data
+train = id &gt; 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(df$perimeter_mean,df$area_se)
+
+mean = 1:20
+max = 0
+
+for(k in 1:20){
+  knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k)
+  mean[k] = mean(knn.pred==df$diagnosis[!train])
+  if(mean[k] &gt; max){
+     max = mean[k]
+     maxk = k
+  }
+}
+
+renderPlot(plot(mean))
+
+max
+maxk
+</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+</div>
+<div id="section-subset-selection" class="section level2">
+<h2><strong>Subset Selection</strong></h2>
+<p>Using best subset selesction we can detrmine which model has the best predictors with the lowest error. With a dataset as large and complex as the one we are using, this helps us narrow down some key predictors.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSBcIk1cIl0gPC0gMVxuZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSBcIkJcIl0gPC0gMFxuXG4jUlVubmluZyBiZXN0IHN1YnNldCByZWdyZXNzaW9uIGFuZCBzYXZpbmcgcmVzdWx0c1xucmVnZml0LmZ1bGw9c3VwcHJlc3NXYXJuaW5ncyhyZWdzdWJzZXRzKGRmJGRpYWdub3Npc34uLGRhdGE9ZGYsIG52PTMyKSlcbnJlZy5zdW1tYXJ5PXN1bW1hcnkocmVnZml0LmZ1bGwpXG5cbiNQbG90dGluZyByZXN1bHRzXG5taW4gPSB3aGljaC5taW4ocmVnLnN1bW1hcnkkY3ApXG5yZW5kZXJQbG90KHBsb3QocmVnLnN1bW1hcnkkY3AseGxhYj1cIk51bWJlciBvZiBWYXJpYWJsZXNcIix5bGFiPVwiQ3BcIilcbiAgICAgICAgICAgKyBwb2ludHMobWluLHJlZy5zdW1tYXJ5JGNwW21pbl0scGNoPTIwLGNvbD1cInJlZFwiKSlcbmBgYCJ9 -->
+<pre class="r"><code>df$diagnosis[df$diagnosis == &quot;M&quot;] &lt;- 1
+df$diagnosis[df$diagnosis == &quot;B&quot;] &lt;- 0
+
+#RUnning best subset regression and saving results
+regfit.full=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32))
+reg.summary=summary(regfit.full)
+
+#Plotting results
+min = which.min(reg.summary$cp)
+renderPlot(plot(reg.summary$cp,xlab=&quot;Number of Variables&quot;,ylab=&quot;Cp&quot;)
+           + points(min,reg.summary$cp[min],pch=20,col=&quot;red&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>From the analysis above we can see that that the model with the lowest error has 14 different predictors. Those predictors can be seen below in the summary of the coefficients of the best subset analysis for this model.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0NvZWZmaWNpZW50IFN1bW1hcnlcbmNvZWYocmVnZml0LmZ1bGwsbWluKVxuYGBgIn0= -->
+<pre class="r"><code>#Coefficient Summary
+coef(regfit.full,min)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgKEludGVyY2VwdCkgICAgICAgICAgICAgcmFkaXVzX21lYW4gICAgICAgIGNvbXBhY3RuZXNzX21lYW4gXG4gICAgICAgICAgLTIuMTI3NTU2NTAyNSAgICAgICAgICAgLTAuMDM3NzA1NDIzMyAgICAgICAgICAgLTMuNjU0MzEzMzY3MiBcbiAgICAgICAgIGNvbmNhdml0eV9tZWFuICAgICBjb25jYXZlX3BvaW50c19tZWFuICAgICAgICAgICAgICAgcmFkaXVzX3NlIFxuICAgICAgICAgICAxLjM5NTc4NDMzODQgICAgICAgICAgICAzLjEzODc4MTEyOTMgICAgICAgICAgICAwLjE4MzMxMzc0OTIgXG4gICAgICAgICAgc21vb3RobmVzc19zZSAgICAgICAgICAgIGNvbmNhdml0eV9zZSAgICAgICBjb25jYXZlX3BvaW50c19zZSBcbiAgICAgICAgICAxOS4yODM1NjcyNzg4ICAgICAgICAgICAtNC4wODAxOTc5NTM3ICAgICAgICAgICAxMC40NDQ3MzYyMjQ4IFxuICAgICAgICAgICByYWRpdXNfd29yc3QgICAgICAgICAgIHRleHR1cmVfd29yc3QgICAgICAgICAgICAgIGFyZWFfd29yc3QgXG4gICAgICAgICAgIDAuMTc0ODk0NzY5NCAgICAgICAgICAgIDAuMDA5OTE1OTk2NiAgICAgICAgICAgLTAuMDAwOTYwOTM3MyBcbiAgICAgICAgY29uY2F2aXR5X3dvcnN0ICAgICAgICAgIHN5bW1ldHJ5X3dvcnN0IGZyYWN0YWxfZGltZW5zaW9uX3dvcnN0IFxuICAgICAgICAgICAwLjQ5OTgzNTI1ODAgICAgICAgICAgICAwLjgwNzczNDUzOTYgICAgICAgICAgICAzLjY4NDcwNTA4OTcgXG4ifQ== -->
+<pre><code>            (Intercept)             radius_mean        compactness_mean 
+          -2.1275565025           -0.0377054233           -3.6543133672 
+         concavity_mean     concave_points_mean               radius_se 
+           1.3957843384            3.1387811293            0.1833137492 
+          smoothness_se            concavity_se       concave_points_se 
+          19.2835672788           -4.0801979537           10.4447362248 
+           radius_worst           texture_worst              area_worst 
+           0.1748947694            0.0099159966           -0.0009609373 
+        concavity_worst          symmetry_worst fractal_dimension_worst 
+           0.4998352580            0.8077345396            3.6847050897 </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>Now we that we have a genral idea of what kind of results subset selection can reproduce, we can try the analysis again this time using forward selection method. As one can see from the results below, we still get a model of 14 parameters that produce the best results.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSBcIk1cIl0gPC0gMVxuZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSBcIkJcIl0gPC0gMFxuXG4jUlVubmluZyBiZXN0IHN1YnNldCByZWdyZXNzaW9uIGFuZCBzYXZpbmcgcmVzdWx0c1xucmVnZml0LmZvcndhcmQ9c3VwcHJlc3NXYXJuaW5ncyhyZWdzdWJzZXRzKGRmJGRpYWdub3Npc34uLGRhdGE9ZGYsIG52PTMyLCBtZXRob2QgPSBcImZvcndhcmRcIikpXG5yZWcuc3VtbWFyeT1zdW1tYXJ5KHJlZ2ZpdC5mdWxsKVxuXG4jUGxvdHRpbmcgcmVzdWx0c1xubWluID0gd2hpY2gubWluKHJlZy5zdW1tYXJ5JGNwKVxucmVuZGVyUGxvdChwbG90KHJlZy5zdW1tYXJ5JGNwLHhsYWI9XCJOdW1iZXIgb2YgVmFyaWFibGVzXCIseWxhYj1cIkNwXCIpXG4gICAgICAgICAgICsgcG9pbnRzKG1pbixyZWcuc3VtbWFyeSRjcFttaW5dLHBjaD0yMCxjb2w9XCJyZWRcIikpXG5gYGAifQ== -->
+<pre class="r"><code>df$diagnosis[df$diagnosis == &quot;M&quot;] &lt;- 1
+df$diagnosis[df$diagnosis == &quot;B&quot;] &lt;- 0
+
+#RUnning best subset regression and saving results
+regfit.forward=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32, method = &quot;forward&quot;))
+reg.summary=summary(regfit.full)
+
+#Plotting results
+min = which.min(reg.summary$cp)
+renderPlot(plot(reg.summary$cp,xlab=&quot;Number of Variables&quot;,ylab=&quot;Cp&quot;)
+           + points(min,reg.summary$cp[min],pch=20,col=&quot;red&quot;))</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-chunk-end -->
+<!-- rnb-text-begin -->
+<p>However these parameters are very different from the previous analysis including new factors such as area_se and compactness_se.</p>
+<!-- rnb-text-end -->
+<!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuI0NvZWZmaWNpZW50IFN1bW1hcnlcbmNvZWYocmVnZml0LmZvcndhcmQsbWluKVxuYGBgIn0= -->
+<pre class="r"><code>#Coefficient Summary
+coef(regfit.forward,min)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiICAgICAgICAgICAgKEludGVyY2VwdCkgICAgICAgIGNvbXBhY3RuZXNzX21lYW4gICAgIGNvbmNhdmVfcG9pbnRzX21lYW4gXG4gICAgICAgICAgLTIuMDIxMjgzMzg0OCAgICAgICAgICAgLTMuMDI3MzE0OTM3OCAgICAgICAgICAgIDMuNjMxNTYwNjI0NSBcbiAgICAgICAgICAgICAgcmFkaXVzX3NlICAgICAgICAgICAgICAgICBhcmVhX3NlICAgICAgICAgICBzbW9vdGhuZXNzX3NlIFxuICAgICAgICAgICAwLjU0NzIwOTQyMjggICAgICAgICAgIC0wLjAwMTk1ODQ4NjAgICAgICAgICAgIDIwLjU2MzQzNDI0OTIgXG4gICAgICAgICBjb21wYWN0bmVzc19zZSAgICAgICAgICAgIGNvbmNhdml0eV9zZSAgICAgICAgICAgIHJhZGl1c193b3JzdCBcbiAgICAgICAgICAtMC41NjQxNTUwNDIxICAgICAgICAgICAtMi4wNTE2ODg3OTMyICAgICAgICAgICAgMC4xMTc5ODE0MzcyIFxuICAgICAgICAgIHRleHR1cmVfd29yc3QgICAgICAgICAgICAgIGFyZWFfd29yc3QgICAgICAgICBjb25jYXZpdHlfd29yc3QgXG4gICAgICAgICAgIDAuMDEwMzUxNDM2OSAgICAgICAgICAgLTAuMDAwNzIxMjI2OCAgICAgICAgICAgIDAuNTMyODY2MDIxMSBcbiAgIGNvbmNhdmVfcG9pbnRzX3dvcnN0ICAgICAgICAgIHN5bW1ldHJ5X3dvcnN0IGZyYWN0YWxfZGltZW5zaW9uX3dvcnN0IFxuICAgICAgICAgICAxLjE5MTMyMTE5ODQgICAgICAgICAgICAwLjcyOTU2NzczNTggICAgICAgICAgICAzLjM0NzgwOTYzNDEgXG4ifQ== -->
+<pre><code>            (Intercept)        compactness_mean     concave_points_mean 
+          -2.0212833848           -3.0273149378            3.6315606245 
+              radius_se                 area_se           smoothness_se 
+           0.5472094228           -0.0019584860           20.5634342492 
+         compactness_se            concavity_se            radius_worst 
+          -0.5641550421           -2.0516887932            0.1179814372 
+          texture_worst              area_worst         concavity_worst 
+           0.0103514369           -0.0007212268            0.5328660211 
+   concave_points_worst          symmetry_worst fractal_dimension_worst 
+           1.1913211984            0.7295677358            3.3478096341 </code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-chunk-end -->
 </div>
 
-<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByb2plY3QgNTogQnJlYXN0IENhbmNlciINCmF1dGhvcjogIkdyb3VwIDg6IEphY2tpZSBMZWUsIEp1YW4gR29tZXosIFBhdHJpY2sgTHlvbnMsIFJvc3MgTWlnbGluIg0KcmVzb3VyY2VfZmlsZXM6DQotIC5SZW52aXJvbg0Kb3V0cHV0Og0KICBodG1sX25vdGVib29rOg0KICAgIGNvZGVfZm9sZGluZzogaGlkZQ0KICAgIHRvYzogeWVzDQogICAgdG9jX2RlcHRoOiA2DQogICAgdG9jX2Zsb2F0OiB5ZXMNCnJ1bnRpbWU6IHNoaW55DQotLS0NCg0KYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9DQpyZXF1aXJlKGRhdGEud29ybGQpDQpyZXF1aXJlKE1BU1MpDQpyZXF1aXJlKElTTFIpDQpyZXF1aXJlKGRwbHlyKQ0KcmVxdWlyZShnZ3Bsb3QyKQ0KcmVxdWlyZShoZXhiaW4pDQpyZXF1aXJlKGpzb25saXRlKQ0KcmVxdWlyZShzaGlueSkNCnJlcXVpcmUocnNjb25uZWN0KQ0KcmVxdWlyZShrbml0cikNCnJlcXVpcmUobHVicmlkYXRlKQ0KcmVxdWlyZShybWFya2Rvd24pDQpyZXF1aXJlKHRpZHlyKQ0KcmVxdWlyZShnbG1uZXQpDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KGNsYXNzKQ0KbGlicmFyeShnbG1uZXQpDQpsaWJyYXJ5KGxlYXBzKQ0KbGlicmFyeSgiZTEwNzEiKQ0KcmVxdWlyZSh0cmVlKQ0KcmVxdWlyZShyYW5kb21Gb3Jlc3QpDQpyZXF1aXJlKGdibSkNCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkNCmBgYA0KDQojIyAqKlIgU2Vzc2lvbiBJbmZvKioNCmBgYHtyfQ0Kc2Vzc2lvbkluZm8oKQ0KYGBgDQoNCiMjICoqSW50cm9kdWN0aW9uKioNCkZPciB0aGlzIHByb2plY3QsIHdlIHdpbGwgdXNlIGFsbCBtZXRob2RzIGFuZCBhbGdvcnRoaW1zIHRoYXQgd2UgaGF2ZSBiZWVuIGludmVzdGlnYXRlZCB0aGlzIHBhc3Qgc2VtZXN0ZXIuIEZyb20gTGluZWFyIHJlZ3Jlc3Npb24gdG8gTGluZWFyIERpc2NyaW1pbmF0ZSBBbmFseXNpcyB0byBEZWNpc2lvbiBUcmVlcyBhbmQgZXZlcnl0aGluZyBpbiBiZXR3ZWVuLiBXaXRoIHRoaXMgYXJyYXkgb2YgbWV0aG9kcyBpbiBvdXIgdG9vbCBib3gsIHdlIGNhbiBhbmFseXplIHRoZSBkYXRhIGFuZCBmaW5kIHNvbWUgaW50cmVzdGluZyBpbnNpZ2h0cyBiYXNlZCBvbiB0aGUga2luZHMgb2YgbWV0aG9kcyB3ZSB1c2UuDQoNCg0KIyMgKipSZXF1aXJpbmcgZGF0YSBhbmQgaW5pdGlhbGl6aW5nIHNlc3Npb24qKg0KV2UgaGF2ZSByZXRyaWV2ZWQgb3VyIGRhdGEgYW5kIHJlcXVpcmVkIHRoZSBwcm9wZXIgbGlicmFyaWVzIGluIG9yZGVyIHRvIGNvcnJlY3RseSBjb21wdXRlIG91ciBhbmFseXNpcy4gT3VyIGRhdGEgY2FuIGJlIHZpZXdlZCBhdCBodHRwczovL2RhdGEud29ybGQvcGF0cmlja3lvdXR1YmUvZi0xNy1lZGEtcHJvamVjdC01Lg0KDQpgYGB7cn0NCnJlcXVpcmUoZGF0YS53b3JsZCkNCg0KcHJvamVjdCA8LSAiaHR0cHM6Ly9kYXRhLndvcmxkL3BhdHJpY2t5b3V0dWJlL2YtMTctZWRhLXByb2plY3QtNSINCmRhdGEud29ybGQ6OnNldF9jb25maWcoY2ZnX2VudigiRFdfQVBJIikpDQpkZiA8LSBkYXRhLndvcmxkOjpxdWVyeSgNCiAgZGF0YS53b3JsZDo6cXJ5X3NxbCgiU0VMRUNUICogRlJPTSBkYXRhIiksDQogIGRhdGFzZXQgPSBwcm9qZWN0DQopDQoNCmF0dGFjaChkZikNCg0KZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSAiTSJdIDwtIDENCmRmJGRpYWdub3Npc1tkZiRkaWFnbm9zaXMgPT0gIkIiXSA8LSAwDQoNCmBgYA0KDQo=</div>
+<div id="rmd-source-code">LS0tDQp0aXRsZTogIlByb2plY3QgNTogQnJlYXN0IENhbmNlciINCmF1dGhvcjogIkdyb3VwIDg6IEphY2tpZSBMZWUsIEp1YW4gR29tZXosIFBhdHJpY2sgTHlvbnMsIFJvc3MgTWlnbGluIg0KcmVzb3VyY2VfZmlsZXM6DQotIC5SZW52aXJvbg0Kb3V0cHV0Og0KICBodG1sX25vdGVib29rOg0KICAgIGNvZGVfZm9sZGluZzogaGlkZQ0KICAgIHRvYzogeWVzDQogICAgdG9jX2RlcHRoOiA2DQogICAgdG9jX2Zsb2F0OiB5ZXMNCnJ1bnRpbWU6IHNoaW55DQotLS0NCg0KYGBge3Igc2V0dXAsIGluY2x1ZGU9RkFMU0V9DQpyZXF1aXJlKGRhdGEud29ybGQpDQpyZXF1aXJlKE1BU1MpDQpyZXF1aXJlKElTTFIpDQpyZXF1aXJlKGRwbHlyKQ0KcmVxdWlyZShnZ3Bsb3QyKQ0KcmVxdWlyZShoZXhiaW4pDQpyZXF1aXJlKGpzb25saXRlKQ0KcmVxdWlyZShzaGlueSkNCnJlcXVpcmUocnNjb25uZWN0KQ0KcmVxdWlyZShrbml0cikNCnJlcXVpcmUobHVicmlkYXRlKQ0KcmVxdWlyZShybWFya2Rvd24pDQpyZXF1aXJlKHRpZHlyKQ0KcmVxdWlyZShnbG1uZXQpDQpsaWJyYXJ5KGdncGxvdDIpDQpsaWJyYXJ5KGNsYXNzKQ0KbGlicmFyeShnbG1uZXQpDQpsaWJyYXJ5KGxlYXBzKQ0KbGlicmFyeSgiZTEwNzEiKQ0KcmVxdWlyZSh0cmVlKQ0KcmVxdWlyZShyYW5kb21Gb3Jlc3QpDQpyZXF1aXJlKGdibSkNCmtuaXRyOjpvcHRzX2NodW5rJHNldChlY2hvID0gVFJVRSkNCmBgYA0KDQojIyAqKlIgU2Vzc2lvbiBJbmZvKioNCmBgYHtyfQ0Kc2Vzc2lvbkluZm8oKQ0KYGBgDQoNCiMjICoqSW50cm9kdWN0aW9uKioNCkZPciB0aGlzIHByb2plY3QsIHdlIHdpbGwgdXNlIGFsbCBtZXRob2RzIGFuZCBhbGdvcnRoaW1zIHRoYXQgd2UgaGF2ZSBiZWVuIGludmVzdGlnYXRlZCB0aGlzIHBhc3Qgc2VtZXN0ZXIuIEZyb20gTGluZWFyIHJlZ3Jlc3Npb24gdG8gTGluZWFyIERpc2NyaW1pbmF0ZSBBbmFseXNpcyB0byBEZWNpc2lvbiBUcmVlcyBhbmQgZXZlcnl0aGluZyBpbiBiZXR3ZWVuLiBXaXRoIHRoaXMgYXJyYXkgb2YgbWV0aG9kcyBpbiBvdXIgdG9vbCBib3gsIHdlIGNhbiBhbmFseXplIHRoZSBkYXRhIGFuZCBmaW5kIHNvbWUgaW50cmVzdGluZyBpbnNpZ2h0cyBiYXNlZCBvbiB0aGUga2luZHMgb2YgbWV0aG9kcyB3ZSB1c2UuDQoNCg0KIyMgKipSZXF1aXJpbmcgZGF0YSBhbmQgaW5pdGlhbGl6aW5nIHNlc3Npb24qKg0KV2UgaGF2ZSByZXRyaWV2ZWQgb3VyIGRhdGEgYW5kIHJlcXVpcmVkIHRoZSBwcm9wZXIgbGlicmFyaWVzIGluIG9yZGVyIHRvIGNvcnJlY3RseSBjb21wdXRlIG91ciBhbmFseXNpcy4gT3VyIGRhdGEgY2FuIGJlIHZpZXdlZCBhdCBodHRwczovL2RhdGEud29ybGQvcGF0cmlja3lvdXR1YmUvZi0xNy1lZGEtcHJvamVjdC01Lg0KYGBge3J9DQpyZXF1aXJlKGRhdGEud29ybGQpDQoNCnByb2plY3QgPC0gImh0dHBzOi8vZGF0YS53b3JsZC9wYXRyaWNreW91dHViZS9mLTE3LWVkYS1wcm9qZWN0LTUiDQpkYXRhLndvcmxkOjpzZXRfY29uZmlnKGNmZ19lbnYoIkRXX0FQSSIpKQ0KZGYgPC0gZGF0YS53b3JsZDo6cXVlcnkoDQogIGRhdGEud29ybGQ6OnFyeV9zcWwoIlNFTEVDVCAqIEZST00gZGF0YSIpLA0KICBkYXRhc2V0ID0gcHJvamVjdA0KKQ0KDQphdHRhY2goZGYpDQoNCg0KYGBgDQoNCiMjICoqSy1OZWFyZXN0IE5laWdoYm9ycyoqDQoNCldpdGggSy1OZWFyZXN0IE5laWdoYm9ycyBhbmFseXNpcyBvciBLTk4sIHdlIGNhbiB1c2UgbXVsaXRwbGlwbGUgcHJlZGljdG9ycyB0byBzZWUgd2hpY2ggb25lIGlzIGJlc3QgYXQgcHJlZGljdGluZyB0aGUgcmVzdWx0cyBvZiBoYXZpbmcgYSBjYW5jZXJvdXMgdHVtb3Igb3Igbm90LiBXZSBzZXQgYW5kIHRyYWluaW5nIGRhdGEgYmFzZWQgb24gdGhlIGlkIG51bWJlcnMgdG8gdXNlIGluIG91ciBhbmFseXNpcy4gVGhlIGZpcnN0IEtOTiBhbmFseXNpcyBkb25lIHdlIHVzZWQgcGVyaW1ldGVyX21lYW4gYW5kIGFyZWFfbWVhbiBhbmQgZ290IGEgcmVzdWx0cyBvZiBtZWFuIG9mIDgzJSB3aGljaCBpcyBpbmNyZWRpYmx5IGFjY3VyYXRlLg0KYGBge3J9DQojIEVzdGFibGlzaGluZyB0cmFpbmluZyBkYXRhDQp0cmFpbiA9IGlkID4gOTAwMDAwDQoNCiMgVGVzdCAzOiBVc2luZyByZXN0aW5nIGJsb29kIHByZWFzc3VyZSBhbmQgY2hlc3QgcGFpbnMgdG8gZGV0ZXJtaW5lIGhlYXJ0IGRpc2Vhc2UNCnRlc3QgPSBjYmluZChkZiRwZXJpbWV0ZXJfbWVhbixkZiRhcmVhX21lYW4pDQoNCmtubi5wcmVkID0ga25uKHRlc3RbdHJhaW4sXSwgdGVzdFshdHJhaW4sXSwgZGYkZGlhZ25vc2lzW3RyYWluXSwgaz0xKQ0KdGFibGUoa25uLnByZWQsZGYkZGlhZ25vc2lzWyF0cmFpbl0pDQptZWFuKGtubi5wcmVkPT1kZiRkaWFnbm9zaXNbIXRyYWluXSkNCmBgYA0KDQpTaW5jZSB0aGVzZSB0d28gcGFyYW1ldGVycyBnYXZlIGdyZWF0IHJlc3VsdHMsIHdlIGNhbiB1c2UgdmFyaWF0aW9ucyBvZiB0aGVtIHRvIHNlZSBpZiB3ZSBjYW4gZ2V0IGJldHRlciByZXN1bHRzLiBGb3IgdGhpcyBhbmFseXNpcyB3ZSB1c2VkIHBlcmltZXRlcl9tZWFuIGFnYWluIGJ1dCB1c2VkIGFyZWFfc2UgaW5zdGVhZC4gV2UgZ290IG11Y2ggYmV0dGVyIHJlc3VsdHMgd2l0aCBhIG1lYW4gb2YgODQlLiANCmBgYHtyfQ0KIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YQ0KdHJhaW4gPSBpZCA+IDkwMDAwMA0KDQojIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlDQp0ZXN0ID0gY2JpbmQoZGYkcGVyaW1ldGVyX21lYW4sZGYkYXJlYV9zZSkNCg0Ka25uLnByZWQgPSBrbm4odGVzdFt0cmFpbixdLCB0ZXN0WyF0cmFpbixdLCBkZiRkaWFnbm9zaXNbdHJhaW5dLCBrPTEpDQp0YWJsZShrbm4ucHJlZCxkZiRkaWFnbm9zaXNbIXRyYWluXSkNCm1lYW4oa25uLnByZWQ9PWRmJGRpYWdub3Npc1shdHJhaW5dKQ0KYGBgDQoNCk5vdyB0aGF0IHdlIGhhdmUgaW1wcm92ZWQgb3VyIHJlc3VsdHMsIHdlIGNhbiBzZWUgaWYgd2UgY2FuIGNvbnRpbnVlIHRvIHVzZSB0aGUgcGFyYW1ldGVycyBidXQgY2hhbmdlIG91ciBLIHZhbHVlcywgd2UgY291bGQgcG90ZW50aWFsbHkgZ2V0IGV2ZW4gYmV0dGVyIHJlc3VsdHMuIFRoZSBhbmFseXNpcyBjb25zaXN0ZW50bHkgZGV0ZXJtaW5lcyB0aGF0IGEgayB2YWx1ZSBvZiAzIHdpbGwgZ2l2ZSB0aGUgaGlnaGVzdCBtZWFuIHdoaWNoIGlzIDg2JS4NCmBgYHtyfQ0KIyBFc3RhYmxpc2hpbmcgdHJhaW5pbmcgZGF0YQ0KdHJhaW4gPSBpZCA+IDkwMDAwMA0KDQojIFRlc3QgMzogVXNpbmcgcmVzdGluZyBibG9vZCBwcmVhc3N1cmUgYW5kIGNoZXN0IHBhaW5zIHRvIGRldGVybWluZSBoZWFydCBkaXNlYXNlDQp0ZXN0ID0gY2JpbmQoZGYkcGVyaW1ldGVyX21lYW4sZGYkYXJlYV9zZSkNCg0KbWVhbiA9IDE6MjANCm1heCA9IDANCg0KZm9yKGsgaW4gMToyMCl7DQogIGtubi5wcmVkID0ga25uKHRlc3RbdHJhaW4sXSwgdGVzdFshdHJhaW4sXSwgZGYkZGlhZ25vc2lzW3RyYWluXSwgaykNCiAgbWVhbltrXSA9IG1lYW4oa25uLnByZWQ9PWRmJGRpYWdub3Npc1shdHJhaW5dKQ0KICBpZihtZWFuW2tdID4gbWF4KXsNCiAgICAgbWF4ID0gbWVhbltrXQ0KICAgICBtYXhrID0gaw0KICB9DQp9DQoNCnJlbmRlclBsb3QocGxvdChtZWFuKSkNCg0KbWF4DQptYXhrDQoNCmBgYA0KDQojIyAqKlN1YnNldCBTZWxlY3Rpb24qKg0KVXNpbmcgYmVzdCBzdWJzZXQgc2VsZXNjdGlvbiB3ZSBjYW4gZGV0cm1pbmUgd2hpY2ggbW9kZWwgaGFzIHRoZSBiZXN0IHByZWRpY3RvcnMgd2l0aCB0aGUgbG93ZXN0IGVycm9yLiBXaXRoIGEgZGF0YXNldCBhcyBsYXJnZSBhbmQgY29tcGxleCBhcyB0aGUgb25lIHdlIGFyZSB1c2luZywgdGhpcyBoZWxwcyB1cyBuYXJyb3cgZG93biBzb21lIGtleSBwcmVkaWN0b3JzLg0KYGBge3J9DQpkZiRkaWFnbm9zaXNbZGYkZGlhZ25vc2lzID09ICJNIl0gPC0gMQ0KZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSAiQiJdIDwtIDANCg0KI1JVbm5pbmcgYmVzdCBzdWJzZXQgcmVncmVzc2lvbiBhbmQgc2F2aW5nIHJlc3VsdHMNCnJlZ2ZpdC5mdWxsPXN1cHByZXNzV2FybmluZ3MocmVnc3Vic2V0cyhkZiRkaWFnbm9zaXN+LixkYXRhPWRmLCBudj0zMikpDQpyZWcuc3VtbWFyeT1zdW1tYXJ5KHJlZ2ZpdC5mdWxsKQ0KDQojUGxvdHRpbmcgcmVzdWx0cw0KbWluID0gd2hpY2gubWluKHJlZy5zdW1tYXJ5JGNwKQ0KcmVuZGVyUGxvdChwbG90KHJlZy5zdW1tYXJ5JGNwLHhsYWI9Ik51bWJlciBvZiBWYXJpYWJsZXMiLHlsYWI9IkNwIikNCiAgICAgICAgICAgKyBwb2ludHMobWluLHJlZy5zdW1tYXJ5JGNwW21pbl0scGNoPTIwLGNvbD0icmVkIikpDQpgYGANCg0KRnJvbSB0aGUgYW5hbHlzaXMgYWJvdmUgd2UgY2FuIHNlZSB0aGF0IHRoYXQgdGhlIG1vZGVsIHdpdGggdGhlIGxvd2VzdCBlcnJvciBoYXMgMTQgZGlmZmVyZW50IHByZWRpY3RvcnMuIFRob3NlIHByZWRpY3RvcnMgY2FuIGJlIHNlZW4gYmVsb3cgaW4gdGhlIHN1bW1hcnkgb2YgdGhlIGNvZWZmaWNpZW50cyBvZiB0aGUgYmVzdCBzdWJzZXQgYW5hbHlzaXMgZm9yIHRoaXMgbW9kZWwuDQpgYGB7cn0NCiNDb2VmZmljaWVudCBTdW1tYXJ5DQpjb2VmKHJlZ2ZpdC5mdWxsLG1pbikNCmBgYA0KDQpOb3cgd2UgdGhhdCB3ZSBoYXZlIGEgZ2VucmFsIGlkZWEgb2Ygd2hhdCBraW5kIG9mIHJlc3VsdHMgc3Vic2V0IHNlbGVjdGlvbiBjYW4gcmVwcm9kdWNlLCB3ZSBjYW4gdHJ5IHRoZSBhbmFseXNpcyBhZ2FpbiB0aGlzIHRpbWUgdXNpbmcgZm9yd2FyZCBzZWxlY3Rpb24gbWV0aG9kLiBBcyBvbmUgY2FuIHNlZSBmcm9tIHRoZSByZXN1bHRzIGJlbG93LCB3ZSBzdGlsbCBnZXQgYSBtb2RlbCBvZiAxNCBwYXJhbWV0ZXJzIHRoYXQgcHJvZHVjZSB0aGUgYmVzdCByZXN1bHRzLg0KYGBge3J9DQpkZiRkaWFnbm9zaXNbZGYkZGlhZ25vc2lzID09ICJNIl0gPC0gMQ0KZGYkZGlhZ25vc2lzW2RmJGRpYWdub3NpcyA9PSAiQiJdIDwtIDANCg0KI1JVbm5pbmcgYmVzdCBzdWJzZXQgcmVncmVzc2lvbiBhbmQgc2F2aW5nIHJlc3VsdHMNCnJlZ2ZpdC5mb3J3YXJkPXN1cHByZXNzV2FybmluZ3MocmVnc3Vic2V0cyhkZiRkaWFnbm9zaXN+LixkYXRhPWRmLCBudj0zMiwgbWV0aG9kID0gImZvcndhcmQiKSkNCnJlZy5zdW1tYXJ5PXN1bW1hcnkocmVnZml0LmZ1bGwpDQoNCiNQbG90dGluZyByZXN1bHRzDQptaW4gPSB3aGljaC5taW4ocmVnLnN1bW1hcnkkY3ApDQpyZW5kZXJQbG90KHBsb3QocmVnLnN1bW1hcnkkY3AseGxhYj0iTnVtYmVyIG9mIFZhcmlhYmxlcyIseWxhYj0iQ3AiKQ0KICAgICAgICAgICArIHBvaW50cyhtaW4scmVnLnN1bW1hcnkkY3BbbWluXSxwY2g9MjAsY29sPSJyZWQiKSkNCmBgYA0KDQpIb3dldmVyIHRoZXNlIHBhcmFtZXRlcnMgYXJlIHZlcnkgZGlmZmVyZW50IGZyb20gdGhlIHByZXZpb3VzIGFuYWx5c2lzIGluY2x1ZGluZyBuZXcgZmFjdG9ycyBzdWNoIGFzIGFyZWFfc2UgYW5kIGNvbXBhY3RuZXNzX3NlLg0KYGBge3J9DQojQ29lZmZpY2llbnQgU3VtbWFyeQ0KY29lZihyZWdmaXQuZm9yd2FyZCxtaW4pDQpgYGA=</div>
 
 
 </div>

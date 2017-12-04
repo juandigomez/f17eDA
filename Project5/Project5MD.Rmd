@@ -120,6 +120,8 @@ maxk
 ```
 
 ## **Subset Selection**
+
+**Best Subset Selection**
 Using best subset selesction we can detrmine which model has the best predictors with the lowest error. With a dataset as large and complex as the one we are using, this helps us narrow down some key predictors.
 ```{r}
 df$diagnosis[df$diagnosis == "M"] <- 1
@@ -140,3 +142,170 @@ From the analysis above we can see that that the model with the lowest error has
 #Coefficient Summary
 coef(regfit.full,min)
 ```
+
+**Forward Stepwise**
+Now we that we have a genral idea of what kind of results subset selection can reproduce, we can try the analysis again this time using forward stepwise. As one can see from the results below, this analysis yields a model with 16 parameters as the best.
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+
+#RUnning best subset regression and saving results
+regfit.forward=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32, method = "forward"))
+reg.summary1=summary(regfit.forward)
+
+#Plotting results
+min1 = which.min(reg.summary1$cp)
+renderPlot(plot(reg.summary1$cp,xlab="Number of Variables",ylab="Cp")
+           + points(min1,reg.summary1$cp[min1],pch=20,col="red"))
+```
+
+Some of the parameters are also found in the results from the best subset selection but we also have new parameters taken into account such as area_se and compactness_se.
+```{r}
+#Coefficient Summary
+coef(regfit.forward,min)
+```
+
+**Backward Stepwise**
+Lastly we can repeat the analysis using backward stepwise. Interestingly enough, we actually get the same results as the original analysis, indluding the parameters that make up the best model as seen below.
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+
+#RUnning best subset regression and saving results
+regfit.backward=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32, method = "backward"))
+reg.summary2=summary(regfit.backward)
+
+#Plotting results
+min2 = which.min(reg.summary2$cp)
+renderPlot(plot(reg.summary2$cp,xlab="Number of Variables",ylab="Cp")
+           + points(min,reg.summary2$cp[min2],pch=20,col="red"))
+
+#Coefficient Summary
+coef(regfit.backward,min)
+```
+
+## **Shrinkage Methods**
+**Ridge Regression**
+Continuing our analysis, we can use shrinkage methods to see which model would give us the best results as well. First we must make a matrix our data and a variable y with the response variable.
+```{r}
+x=model.matrix(df$diagnosis~.-1,data=df) 
+y=df$diagnosis
+y = as.numeric(y)
+```
+
+Now we can use that matrix and the response variable to run a ridge regression model using glmnet. THis allows us to visually see the coefficients of the parameters that most affect the model and then it shrinks those coefficients to almost zero.
+```{r}
+fit.ridge=glmnet(x,y,alpha=0)
+renderPlot(plot(fit.ridge,xvar="lambda",label=TRUE))
+```
+
+We are able to cross validate this model to see which one produces best results and according to the curve, the full model tends to be showing pretty good results. When looking at the coefficients, we can see that all parameters are in use except for id.
+```{r}
+cv.ridge=cv.glmnet(x,y,alpha=0)
+renderPlot(plot(cv.ridge))
+coef(cv.ridge)
+```
+
+**Lasso**
+SImilarly, we can use glmnet to run an analysis using the lasso model. This graphs looks similar slightly different than the ridge regression model. It seems like lasso is determine that other coefficients have more weight than others.
+```{r}
+fit.lasso=glmnet(x,y)
+renderPlot(plot(fit.lasso,xvar="lambda",label=TRUE))
+```
+
+When running cross validation on the lasso model, we can see that while many parameters are still in use, some were not signifacnt enough and were not included in the model.
+```{r}
+cv.lasso=cv.glmnet(x,y)
+renderPlot(plot(cv.lasso))
+coef(cv.lasso)
+```
+
+
+
+## **Decision Trees**
+Decision trees are great for this kind of analysis because he already have a binary response variable. We have to do some set up first in order for the tree to analyz the data correctly.
+```{r}
+# Setting up the data
+df$diagnosis[df$diagnosis == 1] <- "M"
+df$diagnosis[df$diagnosis == 0] <- "B"
+
+result = df$diagnosis
+
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+
+df$diagnosis = as.numeric(df$diagnosis)
+
+df=data.frame(df, result)
+```
+
+Once this set up is compelete, we can do a tree and analyze the kinds of parameters and thresholds it deems significant.
+```{r}
+tree.diagnosis=tree(result~.-diagnosis,df)
+summary(tree.diagnosis)
+renderPlot({
+  plot(tree.diagnosis)
+  text(tree.diagnosis,pretty=0, cex = 0.7)
+})
+```
+
+After producing the tree above we can see that the big factor seems to be perimeter_worst. Most of the predictions on the right or greater than 105.95 seem to produce a result showing a malignant tumor. Meanwhile, predictions using perimeter_worst less than 1005.95 mostly seem to produce reults of benign tumors.
+
+**Random Forest**
+We continue our analysis of using decision trees this time as random forest. Random forrest reproduces many bushy trees and averages the error. The biggest variable we can change with this is the size of the training data.
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),100)
+
+rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
+rf.diagnosis
+```
+
+With a training data of 100, we got incredibly accurate results with an error rate of 6%. 
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),200)
+
+rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
+rf.diagnosis
+```
+
+Increasing the size of the training data improved the accuracy slightly by repoducing an error rate of 5%
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),400)
+
+rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
+rf.diagnosis
+```
+
+Finally, creating a training data of size 400, we get the best results with a 3% error rate, which is increadibly accurate results.This again can be due to the nature of the dataset which seems to be set up very well for this kind of analysis.
+
+**Boosting**
+Boosting is another way to analyze decision trees. This method instead creates many small tree. The function allows us to play arround with the amount of trees, the depth and the division.
+
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),400)
+
+boost.diagnosis=gbm(result~.-diagnosis,data=df[train,],distribution="gaussian",n.trees=1000,shrinkage=0.001,interaction.depth=2)
+renderPlot(summary(boost.diagnosis))
+```
+
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),400)
+
+boost.diagnosis=gbm(result~.-diagnosis,data=df[train,],distribution="gaussian",n.trees=1000,shrinkage=1,interaction.depth=3)
+renderPlot(summary(boost.diagnosis))
+```
+
+```{r}
+set.seed(101)
+train=sample(1:nrow(df),400)
+
+boost.diagnosis=gbm(result~.-diagnosis,data=df[train,],distribution="gaussian",n.trees=1000,shrinkage=0.1,interaction.depth=4)
+renderPlot(summary(boost.diagnosis))
+```
+
+We ran three analysis, each with a different shrinkage and depth value but the results remained consistent. The most significant predictors using boosting are concave_points_worst, area_worst, and premieter_worst.
