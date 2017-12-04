@@ -32,9 +32,14 @@ library(class)
 library(glmnet)
 library(leaps)
 library("e1071")
+library(pROC)
+library(ROCR)
+require(ROCR)
+require(pROC)
 require(tree)
 require(randomForest)
 require(gbm)
+require(boot)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -44,7 +49,7 @@ sessionInfo()
 ```
 
 ## **Introduction**
-FOr this project, we will use all methods and algorthims that we have been investigated this past semester. From Linear regression to Linear Discriminate Analysis to Decision Trees and everything in between. With this array of methods in our tool box, we can analyze the data and find some intresting insights based on the kinds of methods we use.
+For this project, we will use all methods and algorthims that we have been investigated this past semester. From Linear regression to Linear Discriminate Analysis to Decision Trees and everything in between. With this array of methods in our tool box, we can analyze the data and find some intresting insights based on the kinds of methods we use.
 
 
 ## **Requiring data and initializing session**
@@ -63,10 +68,19 @@ attach(df)
 
 
 ```
+## **Multi-predictor Linear Regression**
+
+## **Residual Analysis**
+
+## **Logistic Regression**
+
+## **Linear Discriminant Analysis**
+
+## **Quadratic Discriminant Analysis**
 
 ## **K-Nearest Neighbors**
 
-With K-Nearest Neighbors analysis or KNN, we can use mulitpliple predictors to see which one is best at predicting the results of having a cancerous tumor or not. We set and training data based on the id numbers to use in our analysis. The first KNN analysis done we used perimeter_mean and area_mean and got a results of mean of 83% which is incredibly accurate.
+With K-Nearest Neighbors analysis or KNN, we can use multiple predictors to see which one is best at predicting the results of having a cancerous tumor or not. We set and training data based on the id numbers to use in our analysis. The first KNN analysis done we used perimeter_mean and area_mean and got a results of mean of 83% which is incredibly accurate.
 ```{r}
 # Establishing training data
 train = id > 900000
@@ -118,6 +132,13 @@ max
 maxk
 
 ```
+## **ROC Curve**
+
+## **Validation**
+
+## **Cross-Validation**
+
+## **The Bootstrap**
 
 ## **Subset Selection**
 
@@ -309,3 +330,15 @@ renderPlot(summary(boost.diagnosis))
 ```
 
 We ran three analysis, each with a different shrinkage and depth value but the results remained consistent. The most significant predictors using boosting are concave_points_worst, area_worst, and premieter_worst.
+
+## **Support Vector Machines**
+
+## **Unsupervised Learning**
+
+**PCA**
+
+**K-Means Clustering**
+
+**Hierachical Clustering**
+
+## **Neural Networks**
