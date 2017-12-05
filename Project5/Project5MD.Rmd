@@ -27,6 +27,8 @@ require(lubridate)
 require(rmarkdown)
 require(tidyr)
 require(glmnet)
+library(MASS)
+library(ISLR)
 library(ggplot2)
 library(class)
 library(glmnet)
@@ -49,7 +51,7 @@ sessionInfo()
 ```
 
 ## **Introduction**
-For this project, we will use all methods and algorthims that we have been investigated this past semester. From Linear regression to Linear Discriminate Analysis to Decision Trees and everything in between. With this array of methods in our tool box, we can analyze the data and find some intresting insights based on the kinds of methods we use.
+For this project, we will use all methods and algorthims that we have been investigated this past semester. From Linear regression to Linear Discriminant Analysis to Decision Trees and everything in between. With this array of methods in our tool box, we can analyze the data and find some intresting insights based on the kinds of methods we use.
 
 
 ## **Requiring data and initializing session**
@@ -68,13 +70,54 @@ attach(df)
 
 
 ```
+
+## **Interesting Findings**
+
+**Using Best Subset Regression results in LDA**
+```{r}
+train1 <- sample(1:568, 284)
+diagnosis2=lda(diagnosis~radius_mean+compactness_mean+concavity_mean+concave_points_mean+radius_se+smoothness_se+concavity_se+concave_points_se+radius_worst+texture_worst+area_worst+concavity_worst+symmetry_worst+fractal_dimension_worst,data=df,prior=c(1,1)/2,subset=train1)
+lda.pred2=predict(diagnosis2,df[-train1, ])
+df2 = data.frame(lda.pred2)
+table(lda.pred2$class,df[-train1, ]$diagnosis)
+mean(lda.pred2$class==df[-train1, ]$diagnosis)
+```
+
+We decided to use the results from Best Subset Regression in LDA to see what kind of result we would get. Surprisingly, the misclassification rate is even lower than the misclassification rate from the original LDA model. This is interesting because we were able to utilize the findings from best subset regression to find an even better LDA model.
+
 ## **Multi-predictor Linear Regression**
+```{r}
+fit=lm(radius_mean~concave_points_mean+concavity_mean,data=df)
+summary(fit)
+par(mfrow=c(2,2))
+renderPlot(plot(fit))
+```
+
+Because our response variable is categorical (whether the tumor is malignant or benign), we decided to make radius_mean as the response variable for linear regression because it's a quantitative variable. We think using radius_mean as the response variable is fine in this case because malignant tumors typically grow much quicker compared to benign tumors. After plotting several scatterplots, concavity_mean and concave_points_mean appear to be the best predictors for radius_mean.
+
+Looking at the residual plot, the points are randomly scattered, so we can assume that the model is approximately linear with a constant variance. Additionally, the Normal Q-Q plot is close to being linear which means that the model is approximately normal. We have a R ^2 value of 0.7201, which is fairly decent. We can conclude that concavity_mean and concave_points_mean are good predictors for radius_mean which in turn should hopefully mean that they are good predictors for diagnosis.
 
 ## **Residual Analysis**
 
 ## **Logistic Regression**
 
 ## **Linear Discriminant Analysis**
+```{r}
+diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=df,prior=c(1,1)/2,subset=train1)
+lda.pred=predict(diagnosis1, df[-train1, ])
+df1 = data.frame(lda.pred)
+sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
+
+renderPlot({
+  x <- df1$LD1
+  bins <- seq(min(x), max(x), length.out = input$bins + 1)
+  ggplot(df1) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+renderPlot(ggplot(df1) + geom_boxplot(mapping = aes(x=class, y=LD1)))
+
+table(lda.pred$class,df[-train1, ]$diagnosis)
+mean(lda.pred$class==df[-train1, ]$diagnosis)
+```
+After running each of the "mean" variables separately in LDA, we picked the best variables to run the analysis. The misclassification rate is low and there's no overlap in LD1. 
 
 ## **Quadratic Discriminant Analysis**
 
@@ -336,9 +379,49 @@ We ran three analysis, each with a different shrinkage and depth value but the r
 ## **Unsupervised Learning**
 
 **PCA**
+```{r}
+breastmatrix = matrix(
+  c(radius_mean,texture_mean,perimeter_mean,area_mean,smoothness_mean,compactness_mean,concavity_mean,concave_points_mean,symmetry_mean,fractal_dimension_mean,radius_se,texture_se,perimeter_se,area_se,smoothness_se,compactness_se,concavity_se,concave_points_se,symmetry_se,fractal_dimension_se,radius_worst,texture_worst,perimeter_worst,area_worst,smoothness_worst,compactness_worst,concavity_worst,concave_points_worst,symmetry_worst,fractal_dimension_worst), 569, 30)
+
+dimnames(breastmatrix) = list(
+  c("M","M","M","M","B","B","B","B","M", "B", "B", "M", "B", "M", "B", "B", "B", "B", "B", "B", "B", "M", "M", "M", "M", "B","M", "M", "B", "B", "B", "M", "M", "B", "M", "M", "B", "M", "M", "B", "M", "M", "B", "B", "M", "B", "M", "B", "M", "B","B", "B","B", "M", "B", "B", "B", "M", "B", "B", "B", "B", "B", "B", "M", "B", "B", "B", "M", "B", "M", "M", "B", "M", "B", "B", "M", "M","B", "M", "B", "M", "M", "B", "B", "B", "B", "M", "B", "B", "M", "M", "M", "M", "B", "M", "B", "M", "B", "B", "B", "B", "M", "B", "B", "M", "M", "B", "M", "M", "M", "M", "M", "B", "B", "M","M", "M", "B", "M", "B", "M", "B", "B", "B", "M", "B", "M", "M", "M","M", "B", "B", "M", "M", "M", "B", "B", "B", "M", "B", "B", "B", "B", "B", "M", "M", "M", "B", "B", "M", "B", "B", "M", "M", "B","M", "M", "B", "B", "B", "B", "M", "B", "B", "B", "B", "B", "M", "M", "B", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M", "M","M", "M", "M", "M", "B", "B", "B", "B", "M", "B", "B", "M", "B", "M", "B", "B", "M", "B", "B", "M", "M", "B", "M", "M", "B", "B","B","B", "B", "B", "M", "B", "B", "B", "B", "B", "B", "B", "M", "B", "B", "M", "M", "M", "B", "M", "B", "B", "B", "B", "B", "B","B", "M", "B", "B", "B", "B", "B", "B", "B", "M", "B", "B", "M", "B", "M", "B", "M", "B", "B", "B", "B", "M", "M", "M", "M", "B", "B", "B", "B", "M", "B", "M", "B", "M", "M", "B", "B", "B", "M", "B", "B", "B", "B", "B", "B", "M", "B", "M", "M", "M", "B", "B","B", "B", "B", "B", "M", "B", "B", "B", "B", "B", "M", "M", "B", "M", "M", "B", "M", "B", "M", "M", "B", "B", "B", "B", "B", "M","M", "B", "B", "B", "B", "B", "M", "B", "B", "B", "M", "M", "B", "B", "M", "M", "B", "B", "B", "B", "B", "B", "M", "M", "M", "B","B", "B", "B", "B", "B", "B", "M", "B", "M", "B", "B", "B", "B", "M", "B", "B", "M", "B", "B", "M", "B", "B", "B", "B", "B", "B","B", "B", "B", "B", "M", "M", "B", "M", "M", "B", "M", "B", "B", "B", "B", "M", "B", "M", "B", "B", "M", "B", "M", "B", "B", "M","M", "B", "M", "B", "B", "B", "B", "B", "B", "B", "B", "B", "M", "M", "B", "B", "B", "B", "B", "B", "M", "B", "M", "B", "B", "B","B", "B", "B", "B", "B", "B", "M", "B", "B", "B", "B", "B", "B", "B", "B", "M", "B", "M", "B", "B", "B", "M", "B", "B", "B", "B", "B", "M", "M", "M", "B", "B", "M", "B", "M", "B", "B", "B", "B", "B", "M", "B", "B", "B", "M", "B", "M", "B", "M", "M", "B", "B","B", "B", "M", "B", "B", "B", "B", "B", "B", "B", "B", "M","B", "B", "B", "M", "B", "M", "M", "B", "B", "B", "M", "B", "B", "B","B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "M", "B", "B", "M", "M", "M", "M", "M","M", "B", "M", "B", "B", "M", "B", "B", "M", "B", "M", "M", "B", "B", "B", "B", "M", "M", "B", "M", "M", "B", "M", "B", "M", "M","B", "M", "B", "B", "M", "M", "B", "M", "M", "M", "B", "B", "M", "B", "M", "B", "B", "M", "M", "B","B", "B", "M"),
+  c("radius_mean","texture_mean","perimeter_mean","area_mean","smoothness_mean","compactness_mean","concavity_mean","concave_points_mean","symmetry_mean","fractal_dimension_mean","radius_se","texture_se","perimeter_se","area_se","smoothness_se","compactness_se","concavity_se","concave_points_se","symmetry_se","fractal_dimension_se","radius_worst","texture_worst","perimeter_worst","area_worst","smoothness_worst","compactness_worst","concavity_worst","concave_points_worst","symmetry_worst","fractal_dimension_worst")
+)
+
+apply(breastmatrix,2,mean)
+apply(breastmatrix,2, var)
+pca.out=prcomp(breastmatrix, scale=TRUE)
+renderPlot(biplot(pca.out, scale=0))
+```
 
 **K-Means Clustering**
+```{r}
+breastdf <- data.world::query(
+  data.world::qry_sql("SELECT * FROM data"),
+  dataset = project
+)
+renderPlot({
+  ggplot(breastdf,(aes(x=radius_worst, y=concavity_worst, colour = as.factor(diagnosis)))) + geom_point()
+})
+
+set.seed(570)
+km.out=kmeans(breastmatrix,2,nstart=15)
+breastdf3 <- data.frame(breastdf, km.out$cluster)
+breastdf4 <- data.frame(km.out$centers, km.out$size)
+renderPlot({ggplot(breastdf3) + geom_point(mapping = aes(x=radius_worst, y=concavity_worst, colour = as.factor(km.out.cluster))) + geom_point(data=breastdf4, mapping=aes(radius_worst, concavity_worst, size=km.out.size))})
+```
+
+While there is some overlap, radius_worst and concavity_worst gives us clusters that are distinct which is what we expected because these variables were part of the best subset regression. Additionally, the "worst" variables most likely play into the distinction of malignant and benign observations because the values are extreme. 
 
 **Hierachical Clustering**
+```{r}
+hc.complete=hclust(dist(breastmatrix),method="complete")
+renderPlot(plot(hc.complete))
+hc.cut=cutree(hc.complete,2)
+table(hc.cut,diagnosis)
+table(hc.cut,km.out$cluster)
+```
 
-## **Neural Networks**
+The hierarchical dendrogram wasn't helpful because there are so many rows. But looking at the tables above, 81 of the malignant observations are included in cluster 2 which is dominated by benign observations. There seems to be a bigger overlap than we originally thought. 
+
+## **Conclusion**
