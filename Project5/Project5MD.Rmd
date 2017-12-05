@@ -98,6 +98,32 @@ mean(knn.pred==df$diagnosis[!train])
 ```
 We decided to use the results from Best Subset Regression in KNN as well to see what kind of result we would get. Unlike the LDA analysis, the mean for KNN was much larger than the original KNN analysis. This means that KNN is more sensitive to the parameters found by best subset regression.
 
+**Using Best Logistic Regression Results**
+By far the most interesting finding from my analysis was the ability of the logistic regression model to predict diagnosis using concave_points_worst, radius_mean, and concavity_mean. Given that the goal of performing data analytics on this dataset is literally to predict whether a tumor is benign or malignant, a 93% prediction rate is simply astounding. That level of model accuracy would quite literally save lives if applied in the correct ways and if developed with time. This leads us to believe that the dataset's variables are not correlated linearly with diagnosis, but, rather, logistically.
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+df$diagnosis <- as.numeric(df$diagnosis)
+summary(df)
+#glm.fit <- glm(diagnosis~concave_points_worst,radius_mean+symmetry_mean+concavity_mean,data=df,family=binomial)
+#glm.fit <- glm(diagnosis~concavity_mean+concave_points_worst,data=df,family=binomial)
+glm.fit <- glm(diagnosis~radius_mean+concavity_mean+concave_points_worst,data=df,family=binomial)
+summary(glm.fit)
+#str(df)
+glm.probs = predict(glm.fit,type="response")
+glm.probs[1:5]
+
+glm.pred=ifelse(glm.probs>0.5,1,0) #if it's >0.5, we call it malignant, otherwise benign
+attach(df) #allows us to use variables by name
+table(glm.pred,diagnosis) #allows us to compare our predictions to the actual data
+mean(glm.pred==diagnosis) #classification performance: gives us proportion
+renderPlot(plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis"))
+
+g=glm(diagnosis~radius_mean,data=df,family=binomial)
+curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
+points(radius_mean,fitted(g),pch=20)
+```
+
 ## **Multi-predictor Linear Regression**
 ```{r}
 fit=lm(radius_mean~concave_points_mean+concavity_mean,data=df)
@@ -110,8 +136,57 @@ Because our response variable is categorical (whether the tumor is malignant or 
 Looking at the residual plot, the points are randomly scattered, so we can assume that the model is approximately linear with a constant variance. Additionally, the Normal Q-Q plot is close to being linear which means that the model is approximately normal. We have a R ^2 value of 0.7201, which is fairly decent. We can conclude that concavity_mean and concave_points_mean are good predictors for radius_mean which in turn should hopefully mean that they are good predictors for diagnosis.
 
 ## **Residual Analysis**
+To conduct a regression analysis, we first constructed a linear model of the data, using concave_points_worst to predict diagnosis. Then we created a predicted output variable, and then we compared the prediction to the actual diagnosis value. As the plot clearly illustrates, there is a very apparent correlation between concave_points_worst's increasing values and the residuals produced from the regression analysis. We were initially expecting a scatterplot where the data appeared to be randomly "scattered", but it makes sense that the residuals would be linear since this is a binary prediction - only one of two values theoretically can be obtained. This leads to graphs such as this one that aren't particularly intriguing. The mean R-squared value was only about .63. While this is quite better than a 50/50 shot, it's not nearly as meaningful as the logistic model's results. Thus, regression analysis likely isn't the best method to analyze this dataset because it likely isn't linear.
+```{r}
+library(class)
+require(data.world)
+linearcancermodel = lm(diagnosis~concave_points_worst, data = df)
+#linearcancermodel = lm (diagnosis ~ radius_mean+concavity_mean+concave_points_worst, data = df)
+summary(linearcancermodel)
+df$DIAGNOSIS_Predicted  = predict(linearcancermodel)
+df$Residual = df$diagnosis - df$DIAGNOSIS_Predicted
+attach(df)
+summary(df)
+
+renderPlot(plot(df$DIAGNOSIS_Predicted,df$Residual,pch=21,bg="red",col="red"))
+abline(0,0)
+```
+As can be seen in our second redsidual analysis, the shape/pattern of the graph is nearly identical and doesn't lead to any particularly interesting insights.
+```{r}
+breastcancer.lm = lm(diagnosis ~ radius_mean, data=df) 
+breastcancer.res = resid(breastcancer.lm)
+renderPlot(plot(df$radius_mean, breastcancer.res,ylab="Residuals", xlab="radius_mean", main="Breast Cancer Status (Benign vs. Malignant)"))
+abline(0, 0) 
+```
 
 ## **Logistic Regression**
+For logistic regression, we constructed a glm.fit using a binomial family. For this dataset, logistic regression worked remarkably well. Despite running many different logistic regressions, comparing the prediction rates of several combinations of variables, the very first logistic regression performed yielded the best results. We constructed a glm.fit using concave_points_worst, radius_mean, and concavity_mean to predict diagnosis. This first analysis led to above a 93% prediction rate (very low false negatives and false positives). Out of all the datasets we've explored throughout this class, no model on any dataset has every yielded results this promising. This leads us to believe that the data within this model is both very valuable and very close to a true logistic function.
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+df$diagnosis <- as.numeric(df$diagnosis)
+summary(df)
+#glm.fit <- glm(diagnosis~concave_points_worst,radius_mean+symmetry_mean+concavity_mean,data=df,family=binomial)
+#glm.fit <- glm(diagnosis~concavity_mean+concave_points_worst,data=df,family=binomial)
+glm.fit <- glm(diagnosis~radius_mean+concavity_mean+concave_points_worst,data=df,family=binomial)
+summary(glm.fit)
+#str(df)
+glm.probs = predict(glm.fit,type="response")
+glm.probs[1:5]
+
+glm.pred=ifelse(glm.probs>0.5,1,0) #if it's >0.5, we call it malignant, otherwise benign
+attach(df) #allows us to use variables by name
+table(glm.pred,diagnosis) #allows us to compare our predictions to the actual data
+mean(glm.pred==diagnosis) #classification performance: gives us proportion
+renderPlot(plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis"))
+
+g=glm(diagnosis~radius_mean,data=df,family=binomial)
+curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
+points(radius_mean,fitted(g),pch=20)
+```
+As can be seen in the logistic model plot, it is clear that the logistic model curve is quite close to the actual data point. This was of course to be expected given the 93% prediction rate, but this plot allows that to be seen visually.
+
+
 
 ## **Linear Discriminant Analysis**
 ```{r}
@@ -489,6 +564,50 @@ renderPlot(summary(boost.diagnosis))
 We ran three analysis, each with a different shrinkage and depth value but the results remained consistent. The most significant predictors using boosting are concave_points_worst, area_worst, and premieter_worst.
 
 ## **Support Vector Machines**
+
+**Nonlinear Support Vector Machine**
+The following support vector machine is a nonlinear model with a radial kernel used to predict cancer diagnosis using radius_mean. The mean value calculated is the misclassification rate (11%), which demonstrates that this model is just slightly less impressive than the logistic regression model for this dataset. This result validates our insight that this data is not fit to a linear model, as demonstrated by the fact that both a nonlinear support vector machine and a logistic regression model significantly outperformed the linear regression analysis.
+```{r}
+library("e1071")
+
+
+summary(df)
+attach(df)
+head(df,5)
+names(df)
+
+renderPlot(plot(radius_mean,col=diagnosis+3))
+y<-diagnosis
+x<-radius_mean
+
+#convert data to a data frame
+data<-data.frame(y=factor(y),x)
+head(data)
+Radialsvm=svm(factor(y) ~ .,data=data,kernel="radial",cost=5,scale=F)
+Radialsvm
+#confusion matrix to check the accuracy
+table(predicted=Radialsvm$fitted,actual=data$y)
+#misclassification Rate
+mean(Radialsvm$fitted!=data$y)*100 #11% misclassification rate
+```
+
+**Linear Support Vector Machine**
+Next we constructed a linear support vector machine with the hypothesis that it would yield unimpressive results, as we are fairly confident that the dataset simply is not linear. It turns out we were correct, as the error was 0.3116. This is slightly better than the strictly linear model, but still underwhelming compared to the nonlinear support vector machine.
+```{r}
+rad_mean=c(radius_mean)
+diag=c(diagnosis)
+train=data.frame(rad_mean,diag)
+model <- lm(diag ~ rad_mean, train)
+model_svm <- svm(diag~rad_mean,train)
+pred <- predict(model_svm,train)
+renderPlot(plot(train,pch=16)+abline(model)+points(train$rad_mean, pred, col="blue", pch=4))
+
+error <- model$residuals
+lm_error <- sqrt(mean(error^2)) # 0.3304
+error_2 <- train$diag - pred
+svm_error <- sqrt(mean(error_2^2)) # 0.3116
+```
+The black dots represent our data points of radius_mean and the corresponding diagnosis. The black line shows a simple linear regression on the data highlighting a general positive trend. The blue cross marks show us how the model trained on the data and created its own prediction set. We can see these blue marks have a much tighter trend than the black ones. 
 
 ## **Unsupervised Learning**
 
