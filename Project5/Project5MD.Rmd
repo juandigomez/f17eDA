@@ -67,11 +67,16 @@ df <- data.world::query(
 )
 
 attach(df)
-
+bssdf=df
+smdf=df
+interactivedf=df
 
 ```
 
 ## **Interesting Findings**
+
+**Data.world Insights**
+The following are some of the insights we developed during this project. The rest can be found in our data.world project found here: https://data.world/patrickyoutube/f-17-eda-project-5/insights
 
 **Using Best Subset Regression results in LDA**
 ```{r}
@@ -104,9 +109,7 @@ By far the most interesting finding from my analysis was the ability of the logi
 df$diagnosis[df$diagnosis == "M"] <- 1
 df$diagnosis[df$diagnosis == "B"] <- 0
 df$diagnosis <- as.numeric(df$diagnosis)
-summary(df)
-#glm.fit <- glm(diagnosis~concave_points_worst,radius_mean+symmetry_mean+concavity_mean,data=df,family=binomial)
-#glm.fit <- glm(diagnosis~concavity_mean+concave_points_worst,data=df,family=binomial)
+
 glm.fit <- glm(diagnosis~radius_mean+concavity_mean+concave_points_worst,data=df,family=binomial)
 summary(glm.fit)
 #str(df)
@@ -117,12 +120,18 @@ glm.pred=ifelse(glm.probs>0.5,1,0) #if it's >0.5, we call it malignant, otherwis
 attach(df) #allows us to use variables by name
 table(glm.pred,diagnosis) #allows us to compare our predictions to the actual data
 mean(glm.pred==diagnosis) #classification performance: gives us proportion
-renderPlot(plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis"))
-
 g=glm(diagnosis~radius_mean,data=df,family=binomial)
-curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
-points(radius_mean,fitted(g),pch=20)
+
+
+renderPlot({
+  plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis")
+  curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
+  points(radius_mean,fitted(g),pch=20)
+  })
 ```
+
+**Using ROC and QDA**
+Although I played around with many predictors for my different tests (QDA, ROC Curve, and Validation sets), I found area_mean to be consistently capable in terms of predicting false positives and negatives both from the confusion matrix and the ROC curve plot. This could be potentially valuable to both patients and doctors when simply self-analyzing tumors and determining their malignancy since area is something we all have an inherent understanding of.
 
 ## **Multi-predictor Linear Regression**
 ```{r}
@@ -138,25 +147,20 @@ Looking at the residual plot, the points are randomly scattered, so we can assum
 ## **Residual Analysis**
 To conduct a regression analysis, we first constructed a linear model of the data, using concave_points_worst to predict diagnosis. Then we created a predicted output variable, and then we compared the prediction to the actual diagnosis value. As the plot clearly illustrates, there is a very apparent correlation between concave_points_worst's increasing values and the residuals produced from the regression analysis. We were initially expecting a scatterplot where the data appeared to be randomly "scattered", but it makes sense that the residuals would be linear since this is a binary prediction - only one of two values theoretically can be obtained. This leads to graphs such as this one that aren't particularly intriguing. The mean R-squared value was only about .63. While this is quite better than a 50/50 shot, it's not nearly as meaningful as the logistic model's results. Thus, regression analysis likely isn't the best method to analyze this dataset because it likely isn't linear.
 ```{r}
-library(class)
-require(data.world)
+
 linearcancermodel = lm(diagnosis~concave_points_worst, data = df)
-#linearcancermodel = lm (diagnosis ~ radius_mean+concavity_mean+concave_points_worst, data = df)
+
 summary(linearcancermodel)
 df$DIAGNOSIS_Predicted  = predict(linearcancermodel)
 df$Residual = df$diagnosis - df$DIAGNOSIS_Predicted
-attach(df)
-summary(df)
 
-renderPlot(plot(df$DIAGNOSIS_Predicted,df$Residual,pch=21,bg="red",col="red"))
-abline(0,0)
+renderPlot(plot(df$DIAGNOSIS_Predicted,df$Residual,pch=21,bg="red",col="red")+abline(0,0))
 ```
 As can be seen in our second redsidual analysis, the shape/pattern of the graph is nearly identical and doesn't lead to any particularly interesting insights.
 ```{r}
 breastcancer.lm = lm(diagnosis ~ radius_mean, data=df) 
 breastcancer.res = resid(breastcancer.lm)
-renderPlot(plot(df$radius_mean, breastcancer.res,ylab="Residuals", xlab="radius_mean", main="Breast Cancer Status (Benign vs. Malignant)"))
-abline(0, 0) 
+renderPlot(plot(df$radius_mean, breastcancer.res,ylab="Residuals", xlab="radius_mean", main="Breast Cancer Status (Benign vs. Malignant)")+abline(0, 0)) 
 ```
 
 ## **Logistic Regression**
@@ -165,12 +169,10 @@ For logistic regression, we constructed a glm.fit using a binomial family. For t
 df$diagnosis[df$diagnosis == "M"] <- 1
 df$diagnosis[df$diagnosis == "B"] <- 0
 df$diagnosis <- as.numeric(df$diagnosis)
-summary(df)
-#glm.fit <- glm(diagnosis~concave_points_worst,radius_mean+symmetry_mean+concavity_mean,data=df,family=binomial)
-#glm.fit <- glm(diagnosis~concavity_mean+concave_points_worst,data=df,family=binomial)
+
 glm.fit <- glm(diagnosis~radius_mean+concavity_mean+concave_points_worst,data=df,family=binomial)
 summary(glm.fit)
-#str(df)
+
 glm.probs = predict(glm.fit,type="response")
 glm.probs[1:5]
 
@@ -178,11 +180,13 @@ glm.pred=ifelse(glm.probs>0.5,1,0) #if it's >0.5, we call it malignant, otherwis
 attach(df) #allows us to use variables by name
 table(glm.pred,diagnosis) #allows us to compare our predictions to the actual data
 mean(glm.pred==diagnosis) #classification performance: gives us proportion
-renderPlot(plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis"))
-
 g=glm(diagnosis~radius_mean,data=df,family=binomial)
-curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
-points(radius_mean,fitted(g),pch=20)
+
+renderPlot({
+  plot(radius_mean,diagnosis,xlab="radius_mean",ylab="diagnosis")
+  curve(predict(g,data.frame(radius_mean=x),type="resp"),add=TRUE)
+  points(radius_mean,fitted(g),pch=20)
+  })
 ```
 As can be seen in the logistic model plot, it is clear that the logistic model curve is quite close to the actual data point. This was of course to be expected given the 93% prediction rate, but this plot allows that to be seen visually.
 
@@ -190,8 +194,8 @@ As can be seen in the logistic model plot, it is clear that the logistic model c
 
 ## **Linear Discriminant Analysis**
 ```{r}
-diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=df,prior=c(1,1)/2,subset=train1)
-lda.pred=predict(diagnosis1, df[-train1, ])
+diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=interactivedf,prior=c(1,1)/2,subset=train1)
+lda.pred=predict(diagnosis1, interactivedf[-train1, ])
 df1 = data.frame(lda.pred)
 sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
 
@@ -199,10 +203,11 @@ renderPlot({
   x <- df1$LD1
   bins <- seq(min(x), max(x), length.out = input$bins + 1)
   ggplot(df1) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+
 renderPlot(ggplot(df1) + geom_boxplot(mapping = aes(x=class, y=LD1)))
 
-table(lda.pred$class,df[-train1, ]$diagnosis)
-mean(lda.pred$class==df[-train1, ]$diagnosis)
+table(lda.pred$class,interactivedf[-train1, ]$diagnosis)
+mean(lda.pred$class==interactivedf[-train1, ]$diagnosis)
 ```
 After running each of the "mean" variables separately in LDA, we picked the best variables to run the analysis. The misclassification rate is low and there's no overlap in LD1. 
 
@@ -224,7 +229,6 @@ With K-Nearest Neighbors analysis or KNN, we can use multiple predictors to see 
 # Establishing training data
 train = id > 900000
 
-# Test 3: Using resting blood preassure and chest pains to determine heart disease
 test = cbind(df$perimeter_mean,df$area_mean)
 
 knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
@@ -236,7 +240,6 @@ Since these two parameters gave great results, we can use variations of them to 
 # Establishing training data
 train = id > 900000
 
-# Test 3: Using resting blood preassure and chest pains to determine heart disease
 test = cbind(df$perimeter_mean,df$area_se)
 
 knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
@@ -248,7 +251,6 @@ Now that we have improved our results, we can see if we can continue to use the 
 # Establishing training data
 train = id > 900000
 
-# Test 3: Using resting blood preassure and chest pains to determine heart disease
 test = cbind(df$perimeter_mean,df$area_se)
 
 mean = 1:20
@@ -389,11 +391,12 @@ Our histogram shows estimates of the alpha values we obtained by generating 1,00
 **Best Subset Selection**
 Using best subset selesction we can detrmine which model has the best predictors with the lowest error. With a dataset as large and complex as the one we are using, this helps us narrow down some key predictors.
 ```{r}
-df$diagnosis[df$diagnosis == "M"] <- 1
-df$diagnosis[df$diagnosis == "B"] <- 0
+
+bssdf$diagnosis[bssdf$diagnosis == "M"] <- 1
+bssdf$diagnosis[bssdf$diagnosis == "B"] <- 0
 
 #RUnning best subset regression and saving results
-regfit.full=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32))
+regfit.full=suppressWarnings(regsubsets(bssdf$diagnosis~.,data=bssdf, nv=32))
 reg.summary=summary(regfit.full)
 
 #Plotting results
@@ -410,11 +413,11 @@ coef(regfit.full,min)
 **Forward Stepwise**
 Now we that we have a genral idea of what kind of results subset selection can reproduce, we can try the analysis again this time using forward stepwise. As one can see from the results below, this analysis yields a model with 16 parameters as the best.
 ```{r}
-df$diagnosis[df$diagnosis == "M"] <- 1
-df$diagnosis[df$diagnosis == "B"] <- 0
+bssdf$diagnosis[bssdf$diagnosis == "M"] <- 1
+bssdf$diagnosis[bssdf$diagnosis == "B"] <- 0
 
 #RUnning best subset regression and saving results
-regfit.forward=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32, method = "forward"))
+regfit.forward=suppressWarnings(regsubsets(bssdf$diagnosis~.,data=bssdf, nv=32, method = "forward"))
 reg.summary1=summary(regfit.forward)
 
 #Plotting results
@@ -431,11 +434,12 @@ coef(regfit.forward,min)
 **Backward Stepwise**
 Lastly we can repeat the analysis using backward stepwise. Interestingly enough, we actually get the same results as the original analysis, indluding the parameters that make up the best model as seen below.
 ```{r}
-df$diagnosis[df$diagnosis == "M"] <- 1
-df$diagnosis[df$diagnosis == "B"] <- 0
+
+bssdf$diagnosis[bssdf$diagnosis == "M"] <- 1
+bssdf$diagnosis[bssdf$diagnosis == "B"] <- 0
 
 #RUnning best subset regression and saving results
-regfit.backward=suppressWarnings(regsubsets(df$diagnosis~.,data=df, nv=32, method = "backward"))
+regfit.backward=suppressWarnings(regsubsets(bssdf$diagnosis~.,data=bssdf, nv=32, method = "backward"))
 reg.summary2=summary(regfit.backward)
 
 #Plotting results
@@ -444,15 +448,18 @@ renderPlot(plot(reg.summary2$cp,xlab="Number of Variables",ylab="Cp")
            + points(min,reg.summary2$cp[min2],pch=20,col="red"))
 
 #Coefficient Summary
-coef(regfit.backward,min)
+coef(regfit.backward,min2)
 ```
 
 ## **Shrinkage Methods**
 **Ridge Regression**
 Continuing our analysis, we can use shrinkage methods to see which model would give us the best results as well. First we must make a matrix our data and a variable y with the response variable.
 ```{r}
-x=model.matrix(df$diagnosis~.-1,data=df) 
-y=df$diagnosis
+smdf$diagnosis[smdf$diagnosis == "M"] <- 1
+smdf$diagnosis[smdf$diagnosis == "B"] <- 0
+
+x=model.matrix(smdf$diagnosis~.-1,data=smdf) 
+y=smdf$diagnosis
 y = as.numeric(y)
 ```
 Now we can use that matrix and the response variable to run a ridge regression model using glmnet. THis allows us to visually see the coefficients of the parameters that most affect the model and then it shrinks those coefficients to almost zero.
@@ -568,13 +575,6 @@ We ran three analysis, each with a different shrinkage and depth value but the r
 **Nonlinear Support Vector Machine**
 The following support vector machine is a nonlinear model with a radial kernel used to predict cancer diagnosis using radius_mean. The mean value calculated is the misclassification rate (11%), which demonstrates that this model is just slightly less impressive than the logistic regression model for this dataset. This result validates our insight that this data is not fit to a linear model, as demonstrated by the fact that both a nonlinear support vector machine and a logistic regression model significantly outperformed the linear regression analysis.
 ```{r}
-library("e1071")
-
-
-summary(df)
-attach(df)
-head(df,5)
-names(df)
 
 renderPlot(plot(radius_mean,col=diagnosis+3))
 y<-diagnosis
@@ -603,9 +603,11 @@ pred <- predict(model_svm,train)
 renderPlot(plot(train,pch=16)+abline(model)+points(train$rad_mean, pred, col="blue", pch=4))
 
 error <- model$residuals
-lm_error <- sqrt(mean(error^2)) # 0.3304
+lm_error <- sqrt(mean(error^2))
+lm_error #lm_error
 error_2 <- train$diag - pred
-svm_error <- sqrt(mean(error_2^2)) # 0.3116
+svm_error <- sqrt(mean(error_2^2)) 
+svm_error #svm_error
 ```
 The black dots represent our data points of radius_mean and the corresponding diagnosis. The black line shows a simple linear regression on the data highlighting a general positive trend. The blue cross marks show us how the model trained on the data and created its own prediction set. We can see these blue marks have a much tighter trend than the black ones. 
 
@@ -654,5 +656,3 @@ table(hc.cut,diagnosis)
 table(hc.cut,km.out$cluster)
 ```
 The hierarchical dendrogram wasn't helpful because there are so many rows. But looking at the tables above, 81 of the malignant observations are included in cluster 2 which is dominated by benign observations. There seems to be a bigger overlap than we originally thought. 
-
-## **Conclusion**
