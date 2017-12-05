@@ -82,8 +82,21 @@ df2 = data.frame(lda.pred2)
 table(lda.pred2$class,df[-train1, ]$diagnosis)
 mean(lda.pred2$class==df[-train1, ]$diagnosis)
 ```
-
 We decided to use the results from Best Subset Regression in LDA to see what kind of result we would get. Surprisingly, the misclassification rate is even lower than the misclassification rate from the original LDA model. This is interesting because we were able to utilize the findings from best subset regression to find an even better LDA model.
+
+**Using Best Subset Regression results in KNN**
+```{r}
+# Establishing training data
+train = id > 900000
+
+# Test 3: Using resting blood preassure and chest pains to determine heart disease
+test = cbind(radius_mean,compactness_mean,concavity_mean,concave_points_mean,radius_se,smoothness_se,concavity_se,concave_points_se,radius_worst,texture_worst,area_worst,concavity_worst,symmetry_worst,fractal_dimension_worst)
+
+knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
+table(knn.pred,df$diagnosis[!train])
+mean(knn.pred==df$diagnosis[!train])
+```
+We decided to use the results from Best Subset Regression in KNN as well to see what kind of result we would get. Unlike the LDA analysis, the mean for KNN was much larger than the original KNN analysis. This means that KNN is more sensitive to the parameters found by best subset regression.
 
 ## **Multi-predictor Linear Regression**
 ```{r}
@@ -92,7 +105,6 @@ summary(fit)
 par(mfrow=c(2,2))
 renderPlot(plot(fit))
 ```
-
 Because our response variable is categorical (whether the tumor is malignant or benign), we decided to make radius_mean as the response variable for linear regression because it's a quantitative variable. We think using radius_mean as the response variable is fine in this case because malignant tumors typically grow much quicker compared to benign tumors. After plotting several scatterplots, concavity_mean and concave_points_mean appear to be the best predictors for radius_mean.
 
 Looking at the residual plot, the points are randomly scattered, so we can assume that the model is approximately linear with a constant variance. Additionally, the Normal Q-Q plot is close to being linear which means that the model is approximately normal. We have a R ^2 value of 0.7201, which is fairly decent. We can conclude that concavity_mean and concave_points_mean are good predictors for radius_mean which in turn should hopefully mean that they are good predictors for diagnosis.
@@ -120,7 +132,6 @@ mean(lda.pred$class==df[-train1, ]$diagnosis)
 After running each of the "mean" variables separately in LDA, we picked the best variables to run the analysis. The misclassification rate is low and there's no overlap in LD1. 
 
 ## **Quadratic Discriminant Analysis**
-
 ```{r}
 qda.fit = qda(diagnosis~texture_mean+perimeter_mean+area_mean+radius_mean,data=df,family=binomial)
 qda.fit
@@ -133,7 +144,6 @@ mean(qda.class$class==df.700$diagnosis)
 Upon running QDA on several mean measurements of tumors, we found that the best predictor was the mean area of a tumor. In the interval of tumors greater than 700 square units, we predict tumors correctly 95.32% of times. This will be a good predictor for our later insights.  
 
 ## **K-Nearest Neighbors**
-
 With K-Nearest Neighbors analysis or KNN, we can use multiple predictors to see which one is best at predicting the results of having a cancerous tumor or not. We set and training data based on the id numbers to use in our analysis. The first KNN analysis done we used perimeter_mean and area_mean and got a results of mean of 83% which is incredibly accurate.
 ```{r}
 # Establishing training data
@@ -146,7 +156,6 @@ knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
 table(knn.pred,df$diagnosis[!train])
 mean(knn.pred==df$diagnosis[!train])
 ```
-
 Since these two parameters gave great results, we can use variations of them to see if we can get better results. For this analysis we used perimeter_mean again but used area_se instead. We got much better results with a mean of 84%. 
 ```{r}
 # Establishing training data
@@ -159,7 +168,6 @@ knn.pred = knn(test[train,], test[!train,], df$diagnosis[train], k=1)
 table(knn.pred,df$diagnosis[!train])
 mean(knn.pred==df$diagnosis[!train])
 ```
-
 Now that we have improved our results, we can see if we can continue to use the parameters but change our K values, we could potentially get even better results. The analysis consistently determines that a k value of 3 will give the highest mean which is 86%.
 ```{r}
 # Establishing training data
@@ -186,6 +194,7 @@ max
 maxk
 
 ```
+
 ## **ROC Curve**
 The ROC curve stands for Receiver Operating Characteristic. It provides us with a visual of our true positive rate against our false positive rate as a diagnostic for interpreting our predictors' accuracy. When the curve is a steeper slope, we have higher sensitivity (which is our goal). When the curve is less steep, we have a less accurate test
 
@@ -243,7 +252,6 @@ loocv=function(fit){
 
 loocv(glm.fit)
 ```
-
 Using LOOCV, I was able to parse through the texture_mean data and see its correlation in comparison with the diagnosis of malignant vs. benign. LOOCV takes a single observation from the validation data and uses the other observations in the training data. As the model is created, each observation within our sample is used in the validation data.
 
 ## **Cross-Validation**
@@ -276,8 +284,6 @@ One short-coming of using K-fold Cross-validation is that the prediction error w
 
 ## **The Bootstrap**
 We choose to create a bootstrap method in addition to cross-validation because bootstrapping allows us to quantify uncertainty for a certain statistical learning method. We have written a function for calculating alpha of the predictor and response variables (texture_mean and tumor diagnosis respectively).
-
-
 ```{r}
 alpha=function(x,y){
   vx=var(x)
@@ -305,7 +311,6 @@ renderPlot(plot(boot.out))
 Our histogram shows estimates of the alpha values we obtained by generating 1,000 simulated data sets based on the true population. Our mean centers around -0.03704653 which is our true value for alpha. Alpha is a indication of how well our risk has been minimized.
 
 ## **Subset Selection**
-
 **Best Subset Selection**
 Using best subset selesction we can detrmine which model has the best predictors with the lowest error. With a dataset as large and complex as the one we are using, this helps us narrow down some key predictors.
 ```{r}
@@ -321,7 +326,6 @@ min = which.min(reg.summary$cp)
 renderPlot(plot(reg.summary$cp,xlab="Number of Variables",ylab="Cp")
            + points(min,reg.summary$cp[min],pch=20,col="red"))
 ```
-
 From the analysis above we can see that that the model with the lowest error has 14 different predictors. Those predictors can be seen below in the summary of the coefficients of the best subset analysis for this model.
 ```{r}
 #Coefficient Summary
@@ -343,7 +347,6 @@ min1 = which.min(reg.summary1$cp)
 renderPlot(plot(reg.summary1$cp,xlab="Number of Variables",ylab="Cp")
            + points(min1,reg.summary1$cp[min1],pch=20,col="red"))
 ```
-
 Some of the parameters are also found in the results from the best subset selection but we also have new parameters taken into account such as area_se and compactness_se.
 ```{r}
 #Coefficient Summary
@@ -377,13 +380,11 @@ x=model.matrix(df$diagnosis~.-1,data=df)
 y=df$diagnosis
 y = as.numeric(y)
 ```
-
 Now we can use that matrix and the response variable to run a ridge regression model using glmnet. THis allows us to visually see the coefficients of the parameters that most affect the model and then it shrinks those coefficients to almost zero.
 ```{r}
 fit.ridge=glmnet(x,y,alpha=0)
 renderPlot(plot(fit.ridge,xvar="lambda",label=TRUE))
 ```
-
 We are able to cross validate this model to see which one produces best results and according to the curve, the full model tends to be showing pretty good results. When looking at the coefficients, we can see that all parameters are in use except for id.
 ```{r}
 cv.ridge=cv.glmnet(x,y,alpha=0)
@@ -397,15 +398,12 @@ SImilarly, we can use glmnet to run an analysis using the lasso model. This grap
 fit.lasso=glmnet(x,y)
 renderPlot(plot(fit.lasso,xvar="lambda",label=TRUE))
 ```
-
 When running cross validation on the lasso model, we can see that while many parameters are still in use, some were not signifacnt enough and were not included in the model.
 ```{r}
 cv.lasso=cv.glmnet(x,y)
 renderPlot(plot(cv.lasso))
 coef(cv.lasso)
 ```
-
-
 
 ## **Decision Trees**
 Decision trees are great for this kind of analysis because he already have a binary response variable. We have to do some set up first in order for the tree to analyz the data correctly.
@@ -423,7 +421,6 @@ df$diagnosis = as.numeric(df$diagnosis)
 
 df=data.frame(df, result)
 ```
-
 Once this set up is compelete, we can do a tree and analyze the kinds of parameters and thresholds it deems significant.
 ```{r}
 tree.diagnosis=tree(result~.-diagnosis,df)
@@ -433,7 +430,6 @@ renderPlot({
   text(tree.diagnosis,pretty=0, cex = 0.7)
 })
 ```
-
 After producing the tree above we can see that the big factor seems to be perimeter_worst. Most of the predictions on the right or greater than 105.95 seem to produce a result showing a malignant tumor. Meanwhile, predictions using perimeter_worst less than 1005.95 mostly seem to produce reults of benign tumors.
 
 **Random Forest**
@@ -445,7 +441,6 @@ train=sample(1:nrow(df),100)
 rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
 rf.diagnosis
 ```
-
 With a training data of 100, we got incredibly accurate results with an error rate of 6%. 
 ```{r}
 set.seed(101)
@@ -454,7 +449,6 @@ train=sample(1:nrow(df),200)
 rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
 rf.diagnosis
 ```
-
 Increasing the size of the training data improved the accuracy slightly by repoducing an error rate of 5%
 ```{r}
 set.seed(101)
@@ -463,7 +457,6 @@ train=sample(1:nrow(df),400)
 rf.diagnosis=randomForest(result~.-diagnosis,data=df,subset=train)
 rf.diagnosis
 ```
-
 Finally, creating a training data of size 400, we get the best results with a 3% error rate, which is increadibly accurate results.This again can be due to the nature of the dataset which seems to be set up very well for this kind of analysis.
 
 **Boosting**
@@ -531,7 +524,6 @@ breastdf3 <- data.frame(breastdf, km.out$cluster)
 breastdf4 <- data.frame(km.out$centers, km.out$size)
 renderPlot({ggplot(breastdf3) + geom_point(mapping = aes(x=radius_worst, y=concavity_worst, colour = as.factor(km.out.cluster))) + geom_point(data=breastdf4, mapping=aes(radius_worst, concavity_worst, size=km.out.size))})
 ```
-
 While there is some overlap, radius_worst and concavity_worst gives us clusters that are distinct which is what we expected because these variables were part of the best subset regression. Additionally, the "worst" variables most likely play into the distinction of malignant and benign observations because the values are extreme. 
 
 **Hierachical Clustering**
@@ -542,7 +534,6 @@ hc.cut=cutree(hc.complete,2)
 table(hc.cut,diagnosis)
 table(hc.cut,km.out$cluster)
 ```
-
 The hierarchical dendrogram wasn't helpful because there are so many rows. But looking at the tables above, 81 of the malignant observations are included in cluster 2 which is dominated by benign observations. There seems to be a bigger overlap than we originally thought. 
 
 ## **Conclusion**
