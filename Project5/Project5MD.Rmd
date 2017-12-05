@@ -200,12 +200,9 @@ As can be seen in the logistic model plot, it is clear that the logistic model c
 diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=breastdf1,prior=c(1,1)/2,subset=train1)
 lda.pred=predict(diagnosis1, breastdf1[-train1, ])
 df1 = data.frame(lda.pred)
-sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
 
 renderPlot({
-  x <- df1$LD1
-  bins <- seq(min(x), max(x), length.out = input$bins + 1)
-  ggplot(df1) + geom_histogram(mapping = aes(x=LD1), breaks = bins, color="blue") + facet_wrap(~class)})
+  ggplot(df1) + geom_histogram(mapping = aes(x=LD1), color="blue") + facet_wrap(~class)})
 
 renderPlot(ggplot(df1) + geom_boxplot(mapping = aes(x=class, y=LD1)))
 
