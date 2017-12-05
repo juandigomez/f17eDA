@@ -243,7 +243,11 @@ loocv=function(fit){
 
 loocv(glm.fit)
 ```
+
+Using LOOCV, I was able to parse through the texture_mean data and see its correlation in comparison with the diagnosis of malignant vs. benign. LOOCV takes a single observation from the validation data and uses the other observations in the training data. As the model is created, each observation within our sample is used in the validation data.
+
 ## **Cross-Validation**
+Choosing a sample training set for which to train upon requires that our sample be representative of the data as a whole. As a result, the validation process of randomly splitting the data in half can yield highly variable test error. We are going to perform K-fold Cross validation for K=5 and K=10 to estimate our test error and then see how they stack up both to each other and to LOOCV which I ran previously.
 ```{r}
 df$diagnosis[df$diagnosis == "M"] <- 1
 df$diagnosis[df$diagnosis == "B"] <- 0
@@ -266,7 +270,14 @@ for(d in degree){
 renderPlot(plot(degree,cv.error,type="b")+lines(degree,cv.error10,type="b",col="red"))
 #renderPlot(plot(degree,cv.error10,type="b",col="red"))
 ```
+The black line represents our 5-fold cross-validation process and the red line represents our 10-fold cross-validation. Looking at the same 5 subdivisions for each cross-validation, we see a reduction in error simply from increasing the amount of subdivisions, K, by 5.
+
+One short-coming of using K-fold Cross-validation is that the prediction error will be biased upward due to high bias-variance tradeoff. If we choose, LOOCV, we minimize bias but greatly increase variance since K=n. If we choose something like K=5 of 10, our tradeoff is a little better.
+
 ## **The Bootstrap**
+We choose to create a bootstrap method in addition to cross-validation because bootstrapping allows us to quantify uncertainty for a certain statistical learning method. We have written a function for calculating alpha of the predictor and response variables (texture_mean and tumor diagnosis respectively).
+
+
 ```{r}
 alpha=function(x,y){
   vx=var(x)
@@ -291,6 +302,8 @@ boot.out=boot(df,alpha.fn,R=1000)
 boot.out
 renderPlot(plot(boot.out))
 ```
+Our histogram shows estimates of the alpha values we obtained by generating 1,000 simulated data sets based on the true population. Our mean centers around -0.03704653 which is our true value for alpha. Alpha is a indication of how well our risk has been minimized.
+
 ## **Subset Selection**
 
 **Best Subset Selection**

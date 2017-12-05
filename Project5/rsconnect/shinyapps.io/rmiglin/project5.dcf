@@ -5,6 +5,6 @@ account: rmiglin
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 244368
-bundleId: 1116147
+bundleId: 1116161
 url: https://rmiglin.shinyapps.io/project5/
-when: 1512464497.25928
+when: 1512465078.56189
