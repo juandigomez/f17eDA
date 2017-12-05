@@ -120,6 +120,7 @@ mean(lda.pred$class==df[-train1, ]$diagnosis)
 After running each of the "mean" variables separately in LDA, we picked the best variables to run the analysis. The misclassification rate is low and there's no overlap in LD1. 
 
 ## **Quadratic Discriminant Analysis**
+
 ```{r}
 qda.fit = qda(diagnosis~texture_mean+perimeter_mean+area_mean+radius_mean,data=df,family=binomial)
 qda.fit
@@ -186,13 +187,110 @@ maxk
 
 ```
 ## **ROC Curve**
+The ROC curve stands for Receiver Operating Characteristic. It provides us with a visual of our true positive rate against our false positive rate as a diagnostic for interpreting our predictors' accuracy. When the curve is a steeper slope, we have higher sensitivity (which is our goal). When the curve is less steep, we have a less accurate test
+
+Below is the ROC curve for smoothness mean:
+```{r}
+
+roc(diagnosis ~ smoothness_mean,df)
+roc(diagnosis ~ smoothness_mean, df, smooth=TRUE)
+renderPlot(plot.roc(df$diagnosis, df$smoothness_mean, percent = TRUE,
+            partial.auc=c(100,90), partial.auc.correct= TRUE,
+            partial.auc.focus="sens",
+            ci=TRUE, boot.n=100, ci.alpha=0.9, stratified=FALSE,
+            auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+            print.auc=TRUE, show.thres=TRUE))
+roc(df$diagnosis, df$smoothness_mean)
+```
+We see that the slope is rather flat (close to 45 degrees). Our test accuracy using smoothness_mean will be only fair. With an area under the curve of 0.7235 (perfect is 1 and failing is 0.5), our predictor is just average.
+```{r}
+renderPlot(plot.roc(df$diagnosis, df$compactness_mean, percent = TRUE,
+            partial.auc=c(100,90), partial.auc.correct= TRUE,
+            partial.auc.focus="sens",
+            ci=TRUE, boot.n=100, ci.alpha=0.9, stratified=FALSE,
+            auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+            print.auc=TRUE, show.thres=TRUE))
+roc(df$diagnosis,df$compactness_mean)
+```
+Visually, we can see that compactness_mean has a steeper slope. Our value for area under the curve is 0.8638 proving compactness_mean to be a better predictor than smoothness_mean.
+```{r}
+renderPlot(plot.roc(df$diagnosis, df$area_mean, percent = TRUE,
+            partial.auc=c(100,90), partial.auc.correct= TRUE,
+            partial.auc.focus="sens",
+            ci=TRUE, boot.n=100, ci.alpha=0.9, stratified=FALSE,
+            auc.polygon=TRUE, max.auc.polygon=TRUE, grid=TRUE,
+            print.auc=TRUE, show.thres=TRUE))
+roc(df$diagnosis,df$area_mean)
+```
+Since QDA showed area_mean to be a solid predictor, I hypothesized that the slope of area_mean would be steeper than that of smoothness and compactness. Just as I suspected, the area under the curve for area_mean came out to 0.9383, proving the area_mean predictor to have very high selectivity.
 
 ## **Validation**
+Validation consists of breaking our data up into separate segments. Using Leave-one-out cross validation, we found the following plot:
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+df$diagnosis <- as.numeric(df$diagnosis)
 
+renderPlot(plot(df$diagnosis~df$texture_mean,data=df))
+
+## LOOCV
+glm.fit=glm(df$diagnosis~df$texture_mean, data=df)
+
+loocv=function(fit){
+  h=lm.influence(fit)$h
+  mean((residuals(fit)/(1-h))^2)
+}
+
+loocv(glm.fit)
+```
 ## **Cross-Validation**
+```{r}
+df$diagnosis[df$diagnosis == "M"] <- 1
+df$diagnosis[df$diagnosis == "B"] <- 0
+df$diagnosis <- as.numeric(df$diagnosis)
+## 5-fold CV error
+cv.error=rep(0,5)
+degree=1:5
+for(d in degree){
+  glm.fit=glm(diagnosis~poly(texture_mean,d), data=df)
+  cv.error[d]=loocv(glm.fit)
+}
 
+
+## 10-fold CV error
+cv.error10=rep(0,5)
+for(d in degree){
+  glm.fit=glm(diagnosis~poly(texture_mean,d), data=df)
+  cv.error10[d]=cv.glm(df,glm.fit,K=10)$delta[1]
+}
+renderPlot(plot(degree,cv.error,type="b")+lines(degree,cv.error10,type="b",col="red"))
+#renderPlot(plot(degree,cv.error10,type="b",col="red"))
+```
 ## **The Bootstrap**
+```{r}
+alpha=function(x,y){
+  vx=var(x)
+  vy=var(y)
+  cxy=cov(x,y)
+  (vy-cxy)/(vx+vy-2*cxy)
+}
+alpha(df$texture_mean,df$diagnosis)
 
+## What is the standard error of alpha?
+
+alpha.fn=function(data, index){
+  with(data[index,],alpha(texture_mean,diagnosis))
+}
+
+alpha.fn(df,1:100)
+
+set.seed(1)
+alpha.fn (df,sample(1:100,100,replace=TRUE))
+
+boot.out=boot(df,alpha.fn,R=1000)
+boot.out
+renderPlot(plot(boot.out))
+```
 ## **Subset Selection**
 
 **Best Subset Selection**
