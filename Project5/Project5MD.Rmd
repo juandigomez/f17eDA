@@ -66,10 +66,13 @@ df <- data.world::query(
   dataset = project
 )
 
+breastdf1 <- data.world::query(
+  data.world::qry_sql("SELECT * FROM data"),
+  dataset = project
+)
 attach(df)
 bssdf=df
 smdf=df
-interactivedf=df
 
 ```
 
@@ -81,11 +84,11 @@ The following are some of the insights we developed during this project. The res
 **Using Best Subset Regression results in LDA**
 ```{r}
 train1 <- sample(1:568, 284)
-diagnosis2=lda(diagnosis~radius_mean+compactness_mean+concavity_mean+concave_points_mean+radius_se+smoothness_se+concavity_se+concave_points_se+radius_worst+texture_worst+area_worst+concavity_worst+symmetry_worst+fractal_dimension_worst,data=df,prior=c(1,1)/2,subset=train1)
-lda.pred2=predict(diagnosis2,df[-train1, ])
+diagnosis2=lda(diagnosis~radius_mean+compactness_mean+concavity_mean+concave_points_mean+radius_se+smoothness_se+concavity_se+concave_points_se+radius_worst+texture_worst+area_worst+concavity_worst+symmetry_worst+fractal_dimension_worst,data=breastdf1,prior=c(1,1)/2,subset=train1)
+lda.pred2=predict(diagnosis2,breastdf1[-train1, ])
 df2 = data.frame(lda.pred2)
-table(lda.pred2$class,df[-train1, ]$diagnosis)
-mean(lda.pred2$class==df[-train1, ]$diagnosis)
+table(lda.pred2$class,breastdf1[-train1, ]$diagnosis)
+mean(lda.pred2$class==breastdf1[-train1, ]$diagnosis)
 ```
 We decided to use the results from Best Subset Regression in LDA to see what kind of result we would get. Surprisingly, the misclassification rate is even lower than the misclassification rate from the original LDA model. This is interesting because we were able to utilize the findings from best subset regression to find an even better LDA model.
 
@@ -194,8 +197,8 @@ As can be seen in the logistic model plot, it is clear that the logistic model c
 
 ## **Linear Discriminant Analysis**
 ```{r}
-diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=interactivedf,prior=c(1,1)/2,subset=train1)
-lda.pred=predict(diagnosis1, interactivedf[-train1, ])
+diagnosis1=lda(diagnosis~radius_mean+perimeter_mean+area_mean+compactness_mean+concavity_mean,data=breastdf1,prior=c(1,1)/2,subset=train1)
+lda.pred=predict(diagnosis1, breastdf1[-train1, ])
 df1 = data.frame(lda.pred)
 sliderInput("bins", "Number of bins:", min = 10, max = 50, value = 30)
 
@@ -206,8 +209,8 @@ renderPlot({
 
 renderPlot(ggplot(df1) + geom_boxplot(mapping = aes(x=class, y=LD1)))
 
-table(lda.pred$class,interactivedf[-train1, ]$diagnosis)
-mean(lda.pred$class==interactivedf[-train1, ]$diagnosis)
+table(lda.pred$class,breastdf1[-train1, ]$diagnosis)
+mean(lda.pred$class==breastdf1[-train1, ]$diagnosis)
 ```
 After running each of the "mean" variables separately in LDA, we picked the best variables to run the analysis. The misclassification rate is low and there's no overlap in LD1. 
 
